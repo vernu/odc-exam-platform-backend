@@ -2,13 +2,19 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/schemas/user.schema';
-import { InitialAdminSetupDTO } from './dto/auth.dto';
+import {
+  InitialAdminSetupDTO,
+  InitialAdminSetupResponsDTO,
+} from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
-  async initialAdminSetup(adminData: InitialAdminSetupDTO) {
+
+  async initialAdminSetup(
+    adminData: InitialAdminSetupDTO,
+  ): Promise<InitialAdminSetupResponsDTO> {
     const adminExists = await this.userModel.findOne({ role: 'admin' });
     if (adminExists) {
       throw new HttpException(
@@ -32,11 +38,17 @@ export class AuthService {
       newUser.save();
       return {
         success: true,
-        newUser,
+        user: newUser,
         accessToken: '',
       };
     } catch (e) {
-      throw new HttpException({}, 500);
+      throw new HttpException(
+        {
+          success: false,
+          error: e,
+        },
+        500,
+      );
     }
   }
 }
