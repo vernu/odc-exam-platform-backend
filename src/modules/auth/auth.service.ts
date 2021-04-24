@@ -41,7 +41,7 @@ export class AuthService {
       role: 'admin',
     });
     try {
-      newUser.save();
+      await newUser.save();
       const payload = { userId: newUser._id, email: newUser.email };
       const accessToken = this.jwtService.sign(payload);
       return {

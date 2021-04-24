@@ -4,13 +4,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { mongoDBConfig } from './config/db';
 import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/user/user.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot(process.env.MONGO_URI, mongoDBConfig),
     AuthModule,
-    UserModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
