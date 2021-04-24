@@ -5,6 +5,8 @@ import { User, UserDocument } from 'src/schemas/user.schema';
 import {
   InitialAdminSetupDTO,
   InitialAdminSetupResponsDTO,
+  LoginDTO,
+  LoginResponseDTO,
 } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 
@@ -49,6 +51,38 @@ export class AuthService {
         },
         500,
       );
+    }
+  }
+
+  async login(credentials: LoginDTO): Promise<any> {
+    const { email, password } = credentials;
+    const user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'User not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    } else {
+      if (await bcrypt.compare(password, user.password)) {
+        return {
+          success: true,
+          message: 'logged in successfully',
+          user,
+          accessToken: '',
+        };
+      } else {
+        throw new HttpException(
+          {
+            success: false,
+            error: 'wrong credentials',
+          },
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
     }
   }
 }

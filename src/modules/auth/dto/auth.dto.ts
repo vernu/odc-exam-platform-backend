@@ -12,3 +12,15 @@ export class InitialAdminSetupResponsDTO {
   accessToken?: string;
   error?: string;
 }
+
+export class LoginDTO {
+  email: string;
+  password: string;
+}
+
+export class LoginResponseDTO {
+  success: boolean;
+  user?: User;
+  accessToken?: string;
+  error?: string;
+}
