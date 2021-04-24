@@ -9,10 +9,14 @@ import {
   LoginResponseDTO,
 } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private jwtService: JwtService,
+  ) {}
 
   async initialAdminSetup(
     adminData: InitialAdminSetupDTO,
@@ -38,10 +42,12 @@ export class AuthService {
     });
     try {
       newUser.save();
+      const payload = { userId: newUser._id, email: newUser.email };
+      const accessToken = this.jwtService.sign(payload);
       return {
         success: true,
         user: newUser,
-        accessToken: '',
+        accessToken,
       };
     } catch (e) {
       throw new HttpException(
@@ -54,7 +60,7 @@ export class AuthService {
     }
   }
 
-  async login(credentials: LoginDTO): Promise<any> {
+  async login(credentials: LoginDTO): Promise<LoginResponseDTO> {
     const { email, password } = credentials;
     const user = await this.userModel.findOne({ email });
 
@@ -68,11 +74,13 @@ export class AuthService {
       );
     } else {
       if (await bcrypt.compare(password, user.password)) {
+        const payload = { userId: user._id, email: user.email };
+        const accessToken = this.jwtService.sign(payload);
         return {
           success: true,
           message: 'logged in successfully',
           user,
-          accessToken: '',
+          accessToken,
         };
       } else {
         throw new HttpException(

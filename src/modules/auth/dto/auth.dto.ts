@@ -22,5 +22,6 @@ export class LoginResponseDTO {
   success: boolean;
   user?: User;
   accessToken?: string;
+  message?: string;
   error?: string;
 }
