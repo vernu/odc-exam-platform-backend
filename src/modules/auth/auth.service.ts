@@ -53,7 +53,7 @@ export class AuthService {
       throw new HttpException(
         {
           success: false,
-          error: e,
+          error: e.toString(),
         },
         500,
       );

@@ -41,9 +41,9 @@ export class UsersService {
       throw new HttpException(
         {
           success: false,
-          error: e,
+          error: e.toString(),
         },
-        5000,
+        500,
       );
     }
   }

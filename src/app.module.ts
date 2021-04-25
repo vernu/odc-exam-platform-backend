@@ -5,12 +5,14 @@ import { AppService } from './app.service';
 import { mongoDBConfig } from './config/db';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { TopicsModule } from './modules/topics/topics.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot(process.env.MONGO_URI, mongoDBConfig),
     AuthModule,
     UsersModule,
+    TopicsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
