@@ -1,4 +1,4 @@
-import { User } from 'src/schemas/user.schema';
+import { User } from 'src/modules/users/schemas/user.schema';
 
 export class InitialAdminSetupDTO {
   name: string;
