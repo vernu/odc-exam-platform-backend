@@ -10,3 +10,14 @@ export class AddTopicResponseDTO {
   message?: string;
   topic?: Topic;
 }
+export class GetTopicsResponseDTO {
+  success: boolean;
+  count: number;
+  topics: Topic[];
+}
+
+export class DeleteTopicResponseDTO {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
