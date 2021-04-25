@@ -3,11 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/modules/users/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
+import { RegisterExaminerResponseDTO } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
-  async registerExaminer(examinerData) {
+  async registerExaminer(examinerData): Promise<RegisterExaminerResponseDTO> {
     const { name, email } = examinerData;
 
     const userExists = await this.userModel.findOne({ email });
@@ -20,7 +21,7 @@ export class UsersService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const password = Math.random().toString(36).substring(5);
+    const password = Math.random().toString(36).substring(5); //random pw
     const hashedPassword = await bcrypt.hash(password, 10);
     const newExaminer = new this.userModel({
       name,
@@ -34,6 +35,7 @@ export class UsersService {
       return {
         success: true,
         user: newExaminer,
+        message: 'Examiner account created successfully',
       };
     } catch (e) {
       throw new HttpException(
