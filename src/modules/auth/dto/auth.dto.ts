@@ -1,12 +1,12 @@
 import { User } from 'src/modules/users/schemas/user.schema';
 
-export class InitialAdminSetupDTO {
+export class InitialSuperAdminSetupDTO {
   name: string;
   email: string;
   password: string;
 }
 
-export class InitialAdminSetupResponsDTO {
+export class InitialSuperAdminSetupResponsDTO {
   success: boolean;
   user?: User;
   accessToken?: string;

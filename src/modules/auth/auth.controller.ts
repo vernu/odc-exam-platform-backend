@@ -1,14 +1,14 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { InitialAdminSetupDTO, LoginDTO } from './dto/auth.dto';
+import { InitialSuperAdminSetupDTO, LoginDTO } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('initial-admin-setup')
-  initialAdminSetup(@Body() initialAdminSetupDTO: InitialAdminSetupDTO) {
-    return this.authService.initialAdminSetup(initialAdminSetupDTO);
+  @Post('initial-super-admin-setup')
+  initialSuperAdminSetup(@Body() initialSuperAdminSetupDTO: InitialSuperAdminSetupDTO) {
+    return this.authService.initialAdminSetup(initialSuperAdminSetupDTO);
   }
 
   @Post('login')

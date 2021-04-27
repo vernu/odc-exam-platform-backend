@@ -3,8 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/modules/users/schemas/user.schema';
 import {
-  InitialAdminSetupDTO,
-  InitialAdminSetupResponsDTO,
+  InitialSuperAdminSetupDTO,
+  InitialSuperAdminSetupResponsDTO,
   LoginDTO,
   LoginResponseDTO,
 } from './dto/auth.dto';
@@ -19,14 +19,14 @@ export class AuthService {
   ) {}
 
   async initialAdminSetup(
-    adminData: InitialAdminSetupDTO,
-  ): Promise<InitialAdminSetupResponsDTO> {
-    const adminExists = await this.userModel.findOne({ role: 'admin' });
+    adminData: InitialSuperAdminSetupDTO,
+  ): Promise<InitialSuperAdminSetupResponsDTO> {
+    const adminExists = await this.userModel.findOne({ role: 'super-admin' });
     if (adminExists) {
       throw new HttpException(
         {
           success: false,
-          error: 'Admin account has already been setup',
+          error: 'SuperAdmin account has already been setup',
         },
         HttpStatus.FORBIDDEN,
       );
@@ -38,7 +38,7 @@ export class AuthService {
       name,
       email,
       password: hashedPassword,
-      role: 'admin',
+      role: 'super-admin',
     });
     try {
       await newUser.save();

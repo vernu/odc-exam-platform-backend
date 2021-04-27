@@ -7,13 +7,13 @@ import {
 } from '@nestjs/common';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class SuperAdminGuard implements CanActivate {
   constructor() {}
 
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    if (user != null && user.role == 'admin') {
+    if (user != null && user.role == 'super-admin') {
       return true;
     } else {
       throw new HttpException(

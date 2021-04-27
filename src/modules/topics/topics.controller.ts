@@ -7,7 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard } from '../auth/guards/admin.guard';
+import { SuperAdminGuard } from '../auth/guards/super-admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AddTopicDTO } from './dto/topic.dto';
 import { TopicsService } from './topics.service';
@@ -22,13 +22,13 @@ export class TopicsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
   addTopic(@Body() addTopicDTO: AddTopicDTO) {
     return this.topicsService.addTopic(addTopicDTO);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
   deleteTopic(@Param('id') id: string) {
     return this.topicsService.deleteTopic(id);
   }
