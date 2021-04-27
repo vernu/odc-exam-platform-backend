@@ -8,7 +8,7 @@ export class AuthController {
 
   @Post('initial-super-admin-setup')
   initialSuperAdminSetup(@Body() initialSuperAdminSetupDTO: InitialSuperAdminSetupDTO) {
-    return this.authService.initialAdminSetup(initialSuperAdminSetupDTO);
+    return this.authService.initialSuperAdminSetup(initialSuperAdminSetupDTO);
   }
 
   @Post('login')

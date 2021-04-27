@@ -18,7 +18,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async initialAdminSetup(
+  async initialSuperAdminSetup(
     adminData: InitialSuperAdminSetupDTO,
   ): Promise<InitialSuperAdminSetupResponsDTO> {
     const adminExists = await this.userModel.findOne({ role: 'super-admin' });
