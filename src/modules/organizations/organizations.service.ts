@@ -19,6 +19,28 @@ export class OrganizationsService {
     @InjectModel(Organization.name)
     private organizationModel: Model<OrganizationDocument>,
   ) {}
+
+  async showOrganizations() {
+    try {
+      const organizations = await this.organizationModel
+        .find()
+        .populate(['admin']);
+      return {
+        success: true,
+        count: organizations.length,
+        organizations,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          success: false,
+          error: e.toString(),
+        },
+        500,
+      );
+    }
+  }
+
   async createOrganization(
     organizationInfo: CreateOrganizationDTO,
   ): Promise<CreateOrganizationResponseDTO> {
