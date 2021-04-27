@@ -51,7 +51,7 @@ export class OrganizationsService {
           description: organizationInfo.organizationDescription,
           admin: newUser,
         });
-
+        await newOrganization.save();
         return {
           success: true,
           message: 'Organizer has been added',
