@@ -6,6 +6,7 @@ import { mongoDBConfig } from './config/db';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { TopicsModule } from './modules/topics/topics.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { TopicsModule } from './modules/topics/topics.module';
     AuthModule,
     UsersModule,
     TopicsModule,
+    OrganizationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
