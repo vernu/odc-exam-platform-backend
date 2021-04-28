@@ -5,6 +5,7 @@ import { User, UserDocument } from '../users/schemas/user.schema';
 import {
   CreateOrganizationDTO,
   CreateOrganizationResponseDTO,
+  ShowOrganizationsResponseDTO,
 } from './dto/organization.dto';
 import {
   Organization,
@@ -20,7 +21,7 @@ export class OrganizationsService {
     private organizationModel: Model<OrganizationDocument>,
   ) {}
 
-  async showOrganizations() {
+  async showOrganizations(): Promise<ShowOrganizationsResponseDTO> {
     try {
       const organizations = await this.organizationModel
         .find()

@@ -1,4 +1,4 @@
-import { Organization } from "../schemas/organization.schema";
+import { Organization } from '../schemas/organization.schema';
 
 export class CreateOrganizationDTO {
   organizationName: string;
@@ -8,7 +8,14 @@ export class CreateOrganizationDTO {
 }
 export class CreateOrganizationResponseDTO {
   success: boolean;
-  organization?: Organization
+  organization?: Organization;
+  error?: string;
+  message?: string;
+}
+export class ShowOrganizationsResponseDTO {
+  success: boolean;
+  count?: number;
+  organizations?: Organization[];
   error?: string;
   message?: string;
 }
