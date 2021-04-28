@@ -62,6 +62,15 @@ export class AuthService {
 
   async login(credentials: LoginDTO): Promise<LoginResponseDTO> {
     const { email, password } = credentials;
+    if (email == null || password == null) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'email and password  is required',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     const user = await this.userModel.findOne({ email });
 
     if (!user) {
