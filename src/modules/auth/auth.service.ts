@@ -77,9 +77,9 @@ export class AuthService {
       throw new HttpException(
         {
           success: false,
-          error: 'User not found',
+          error: 'wrong credentials',
         },
-        HttpStatus.NOT_FOUND,
+        HttpStatus.UNAUTHORIZED,
       );
     } else {
       if (await bcrypt.compare(password, user.password)) {
