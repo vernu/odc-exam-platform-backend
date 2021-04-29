@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { SuperAdminGuard } from '../auth/guards/super-admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateOrganizationDTO } from './dto/organization.dto';
@@ -12,9 +20,15 @@ export class OrganizationsController {
   showOrganizations() {
     return this.organizationsService.showOrganizations();
   }
-  @Post('create')
+  @Post()
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
   createOrganization(@Body() createOrganizationDTO: CreateOrganizationDTO) {
     return this.organizationsService.createOrganization(createOrganizationDTO);
+  }
+
+  @Delete(':organizationId')
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  deleteOrganization(@Param('organizationId') organizationId: string) {
+    return this.organizationsService.deleteOrganization(organizationId);
   }
 }

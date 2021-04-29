@@ -19,3 +19,10 @@ export class ShowOrganizationsResponseDTO {
   error?: string;
   message?: string;
 }
+
+export class DeleteOrganizationResponseDTO {
+  success: boolean;
+  organization?: Organization;
+  error?: string;
+  message?: string;
+}

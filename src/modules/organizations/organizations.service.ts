@@ -5,6 +5,7 @@ import { User, UserDocument } from '../users/schemas/user.schema';
 import {
   CreateOrganizationDTO,
   CreateOrganizationResponseDTO,
+  DeleteOrganizationResponseDTO,
   ShowOrganizationsResponseDTO,
 } from './dto/organization.dto';
 import {
@@ -90,7 +91,40 @@ export class OrganizationsService {
         );
       }
     }
-
-    const newOrganization = new this.organizationModel({});
+  }
+  async deleteOrganization(
+    organizationId: string,
+  ): Promise<DeleteOrganizationResponseDTO> {
+    try {
+      const organization = await this.organizationModel.findOne({
+        _id: organizationId,
+      });
+      if (organization) {
+        await this.organizationModel.deleteOne({
+          _id: organizationId,
+        });
+        return {
+          success: true,
+          organization,
+          message: 'organization deleted',
+        };
+      } else {
+        throw new HttpException(
+          {
+            success: false,
+            error: 'organization not found',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+    } catch (e) {
+      throw new HttpException(
+        {
+          success: false,
+          error: e.toString(),
+        },
+        500,
+      );
+    }
   }
 }
