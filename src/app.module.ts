@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { TopicsModule } from './modules/topics/topics.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { OrganizationsModule } from './modules/organizations/organizations.modul
     UsersModule,
     TopicsModule,
     OrganizationsModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
