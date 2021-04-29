@@ -1,5 +1,6 @@
-import { MailerModule } from '@nest-modules/mailer';
+import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 import { Module } from '@nestjs/common';
+import { join } from 'path';
 import { MailService } from './mail.service';
 
 @Module({
@@ -16,6 +17,13 @@ import { MailService } from './mail.service';
       },
       defaults: {
         from: `No Reply ${process.env.MAIL_FROM}`,
+      },
+      template: {
+        dir: join(__dirname, 'templates'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
       },
     }),
   ],

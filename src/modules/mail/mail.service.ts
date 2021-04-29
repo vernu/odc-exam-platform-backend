@@ -12,4 +12,12 @@ export class MailService {
       console.log(e);
     }
   }
+
+  async sendEmailFromTemplate({ to, subject, template, context }) {
+    try {
+      await this.mailerService.sendMail({ to, subject, template, context });
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }
