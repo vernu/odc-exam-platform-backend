@@ -95,28 +95,28 @@ export class OrganizationsService {
   async deleteOrganization(
     organizationId: string,
   ): Promise<DeleteOrganizationResponseDTO> {
+    const organization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+    if (!organization) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'organization not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     try {
-      const organization = await this.organizationModel.findOne({
+      await this.organizationModel.deleteOne({
         _id: organizationId,
       });
-      if (organization) {
-        await this.organizationModel.deleteOne({
-          _id: organizationId,
-        });
-        return {
-          success: true,
-          organization,
-          message: 'organization deleted',
-        };
-      } else {
-        throw new HttpException(
-          {
-            success: false,
-            error: 'organization not found',
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
+      return {
+        success: true,
+        organization,
+        message: 'organization deleted',
+      };
     } catch (e) {
       throw new HttpException(
         {
