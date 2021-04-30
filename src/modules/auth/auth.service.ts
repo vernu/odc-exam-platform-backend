@@ -21,12 +21,13 @@ export class AuthService {
   async initialSuperAdminSetup(
     adminData: InitialSuperAdminSetupDTO,
   ): Promise<InitialSuperAdminSetupResponsDTO> {
-    const adminExists = await this.userModel.findOne({ role: 'super-admin' });
-    if (adminExists) {
+    //check if there are no users in the db before initializing a super-admin account
+    const anyUser = await this.userModel.findOne();
+    if (anyUser) {
       throw new HttpException(
         {
           success: false,
-          error: 'SuperAdmin account has already been setup',
+          error: 'can\'t create a super-admin account, users exist in the db',
         },
         HttpStatus.FORBIDDEN,
       );
