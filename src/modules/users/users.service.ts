@@ -48,6 +48,14 @@ export class UsersService {
     }
   }
 
+  async findUserById(id) {
+    return await this.userModel.findById({ id });
+  }
+
+  async findUserByEmail(email) {
+    return await this.userModel.findOne({ email });
+  }
+
   sendCredentialsToNewExaminerViaEmail(
     name: string,
     email: string,
