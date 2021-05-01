@@ -4,10 +4,14 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import { RegisterExaminerResponseDTO } from './dto/user.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private mailService: MailService,
+  ) {}
   async registerExaminer(examinerData): Promise<RegisterExaminerResponseDTO> {
     const { name, email } = examinerData;
 
@@ -30,7 +34,6 @@ export class UsersService {
         role: 'examiner',
         password,
       });
-      this.sendCredentialsToNewExaminerViaEmail(name, email, password);
       return {
         success: true,
         user: newExaminer,
@@ -73,15 +76,18 @@ export class UsersService {
         role,
         password: hashedPassword,
       });
+      this.mailService.sendEmailFromTemplate({
+        to: email,
+        subject: `Welcome to ${process.env.APP_NAME || 'ODC'}`,
+        template: 'new-user-welcome',
+        context: {
+          name,
+          email,
+          password,
+          role,
+        },
+      });
       return await newUser.save();
     }
-  }
-
-  sendCredentialsToNewExaminerViaEmail(
-    name: string,
-    email: string,
-    password: string,
-  ) {
-    // console.log({ name, email, password });
   }
 }
