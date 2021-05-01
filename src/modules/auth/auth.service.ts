@@ -10,11 +10,13 @@ import {
 } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
 
@@ -27,22 +29,21 @@ export class AuthService {
       throw new HttpException(
         {
           success: false,
-          error: 'can\'t create a super-admin account, users exist in the db',
+          error: "can't create a super-admin account, users exist in the db",
         },
         HttpStatus.FORBIDDEN,
       );
     }
 
     const { name, email, password } = adminData;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new this.userModel({
-      name,
-      email,
-      password: hashedPassword,
-      role: 'super-admin',
-    });
+
     try {
-      await newUser.save();
+      const newUser = await this.usersService.createUser({
+        name,
+        email,
+        password,
+        role: 'super-admin',
+      });
       const payload = { userId: newUser._id, email: newUser.email };
       const accessToken = this.jwtService.sign(payload);
       return {
@@ -72,7 +73,7 @@ export class AuthService {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    const user = await this.userModel.findOne({ email });
+    const user = await this.usersService.findUserByEmail(email);
 
     if (!user) {
       throw new HttpException(

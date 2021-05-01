@@ -59,7 +59,7 @@ export class UsersService {
     return Math.random().toString(36).substring(5); //random pw
   }
 
-  async createUser({ name, email, password, role }) {
+  async createUser({ name, email, password, role }): Promise<UserDocument> {
     if (await this.findUserByEmail(email)) {
       throw new HttpException(
         { success: false, error: 'user exists with the same email' },
