@@ -163,6 +163,7 @@ export class OrganizationsService {
 
       return {
         success: true,
+        message: 'organization has been created',
         organization,
       };
     }
