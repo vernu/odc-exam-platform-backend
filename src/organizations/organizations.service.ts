@@ -12,11 +12,12 @@ import {
   Organization,
   OrganizationDocument,
 } from './schemas/organization.schema';
-import * as bcrypt from 'bcrypt';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class OrganizationsService {
   constructor(
+    private usersService: UsersService,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Organization.name)
     private organizationModel: Model<OrganizationDocument>,
@@ -59,16 +60,15 @@ export class OrganizationsService {
         HttpStatus.BAD_REQUEST,
       );
     } else {
-      const password = Math.random().toString(36).substring(5); //random pw
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = new this.userModel({
-        name: organizationInfo.adminName,
-        email: organizationInfo.adminEmail,
-        password: hashedPassword,
-      });
+      const password = this.usersService.generateRandomPassword();
 
       try {
-        await newUser.save();
+        const newUser = await this.usersService.createUser({
+          name: organizationInfo.adminName,
+          email: organizationInfo.adminEmail,
+          password,
+          role: 'organization-admin',
+        });
 
         const newOrganization = new this.organizationModel({
           name: organizationInfo.organizationName,
@@ -135,14 +135,13 @@ export class OrganizationsService {
   }) {
     var user = await this.userModel.findOne({ email: examinerEmail });
     if (!user) {
-      const password = Math.random().toString(36).substring(5); //random pw
-      const hashedPassword = await bcrypt.hash(password, 10);
-      user = await new this.userModel({
+      const password = this.usersService.generateRandomPassword();
+      user = await this.usersService.createUser({
         name: examinerName,
         email: examinerEmail,
-        password: hashedPassword,
+        password,
         role: 'examiner',
-      }).save();
+      });
     }
 
     var organization = await this.organizationModel.findById(organizationId);
