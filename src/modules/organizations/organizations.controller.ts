@@ -9,8 +9,12 @@ import {
 } from '@nestjs/common';
 import { SuperAdminGuard } from '../auth/guards/super-admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateOrganizationDTO } from './dto/organization.dto';
+import {
+  AddExaminerToOrganizationDTO,
+  CreateOrganizationDTO,
+} from './dto/organization.dto';
 import { OrganizationsService } from './organizations.service';
+import * as bcrypt from 'bcrypt';
 
 @Controller('organizations')
 export class OrganizationsController {
@@ -30,5 +34,18 @@ export class OrganizationsController {
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
   deleteOrganization(@Param('organizationId') organizationId: string) {
     return this.organizationsService.deleteOrganization(organizationId);
+  }
+
+  @Post(':organizationId/add-examiner')
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  addExaminerToOrganization(
+    @Param('organizationId') organizationId: string,
+    @Body() addExaminerToOrganizationDTO: AddExaminerToOrganizationDTO,
+  ) {
+    return this.organizationsService.addExaminerToOrganization({
+      organizationId,
+      examinerName: addExaminerToOrganizationDTO.examinerName,
+      examinerEmail: addExaminerToOrganizationDTO.examinerEmail,
+    });
   }
 }

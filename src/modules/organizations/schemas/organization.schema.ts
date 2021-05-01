@@ -12,8 +12,10 @@ export class Organization {
   slug: string;
   @Prop({ type: String, required: true, lowercase: true })
   description: string;
-  @Prop({ type: Types.ObjectId, ref: 'User' })
+  @Prop({ type: Types.ObjectId, ref: User.name })
   admin: User;
+  @Prop({ type: [Types.ObjectId], ref: User.name })
+  examiners: [User];
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);

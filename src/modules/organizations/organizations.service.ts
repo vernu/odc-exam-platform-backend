@@ -127,4 +127,45 @@ export class OrganizationsService {
       );
     }
   }
+
+  async addExaminerToOrganization({
+    organizationId,
+    examinerName,
+    examinerEmail,
+  }) {
+    var user = await this.userModel.findOne({ email: examinerEmail });
+    if (!user) {
+      const password = Math.random().toString(36).substring(5); //random pw
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user = await new this.userModel({
+        name: examinerName,
+        email: examinerEmail,
+        password: hashedPassword,
+        role: 'examiner',
+      }).save();
+    }
+
+    var organization = await this.organizationModel.findById(organizationId);
+    if (organization.examiners.includes(user._id)) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'user already exists in your examiners list',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    } else {
+      organization.examiners.push(user);
+      await organization.save();
+
+      organization = await this.organizationModel
+        .findById(organizationId)
+        .populate(['examiners']);
+
+      return {
+        success: true,
+        organization,
+      };
+    }
+  }
 }
