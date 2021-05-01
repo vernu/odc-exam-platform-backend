@@ -11,7 +11,7 @@ export class UsersService {
   async registerExaminer(examinerData): Promise<RegisterExaminerResponseDTO> {
     const { name, email } = examinerData;
 
-    const userExists = await this.userModel.findOne({ email });
+    const userExists = await this.findUserByEmail(email);
     if (userExists) {
       throw new HttpException(
         {
@@ -21,16 +21,15 @@ export class UsersService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const password = Math.random().toString(36).substring(5); //random pw
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newExaminer = new this.userModel({
-      name,
-      email,
-      role: 'examiner',
-      password: hashedPassword,
-    });
+    const password = this.generateRandomPassword();
+
     try {
-      await newExaminer.save();
+      const newExaminer = await this.createUser({
+        name,
+        email,
+        role: 'examiner',
+        password,
+      });
       this.sendCredentialsToNewExaminerViaEmail(name, email, password);
       return {
         success: true,
@@ -48,12 +47,34 @@ export class UsersService {
     }
   }
 
-  async findUserById(id) {
-    return await this.userModel.findById({ id });
+  async findUserById(id: string) {
+    return await this.userModel.findById(id);
   }
 
-  async findUserByEmail(email) {
+  async findUserByEmail(email: string) {
     return await this.userModel.findOne({ email });
+  }
+
+  generateRandomPassword(): string {
+    return Math.random().toString(36).substring(5); //random pw
+  }
+
+  async createUser({ name, email, password, role }) {
+    if (await this.findUserByEmail(email)) {
+      throw new HttpException(
+        { success: false, error: 'user exists with the same email' },
+        HttpStatus.BAD_REQUEST,
+      );
+    } else {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new this.userModel({
+        name,
+        email,
+        role,
+        password: hashedPassword,
+      });
+      return await newUser.save();
+    }
   }
 
   sendCredentialsToNewExaminerViaEmail(
