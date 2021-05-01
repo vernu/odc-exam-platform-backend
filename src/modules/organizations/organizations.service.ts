@@ -95,28 +95,28 @@ export class OrganizationsService {
   async deleteOrganization(
     organizationId: string,
   ): Promise<DeleteOrganizationResponseDTO> {
+    const organization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+    if (!organization) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'organization not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     try {
-      const organization = await this.organizationModel.findOne({
+      await this.organizationModel.deleteOne({
         _id: organizationId,
       });
-      if (organization) {
-        await this.organizationModel.deleteOne({
-          _id: organizationId,
-        });
-        return {
-          success: true,
-          organization,
-          message: 'organization deleted',
-        };
-      } else {
-        throw new HttpException(
-          {
-            success: false,
-            error: 'organization not found',
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
+      return {
+        success: true,
+        organization,
+        message: 'organization deleted',
+      };
     } catch (e) {
       throw new HttpException(
         {
@@ -125,6 +125,47 @@ export class OrganizationsService {
         },
         500,
       );
+    }
+  }
+
+  async addExaminerToOrganization({
+    organizationId,
+    examinerName,
+    examinerEmail,
+  }) {
+    var user = await this.userModel.findOne({ email: examinerEmail });
+    if (!user) {
+      const password = Math.random().toString(36).substring(5); //random pw
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user = await new this.userModel({
+        name: examinerName,
+        email: examinerEmail,
+        password: hashedPassword,
+        role: 'examiner',
+      }).save();
+    }
+
+    var organization = await this.organizationModel.findById(organizationId);
+    if (organization.examiners.includes(user._id)) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'user already exists in your examiners list',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    } else {
+      organization.examiners.push(user);
+      await organization.save();
+
+      organization = await this.organizationModel
+        .findById(organizationId)
+        .populate(['examiners']);
+
+      return {
+        success: true,
+        organization,
+      };
     }
   }
 }

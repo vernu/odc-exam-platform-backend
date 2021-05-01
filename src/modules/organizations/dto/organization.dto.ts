@@ -26,3 +26,8 @@ export class DeleteOrganizationResponseDTO {
   error?: string;
   message?: string;
 }
+
+export class AddExaminerToOrganizationDTO {
+  examinerName: string;
+  examinerEmail: string;
+}
