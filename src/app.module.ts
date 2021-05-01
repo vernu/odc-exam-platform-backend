@@ -3,11 +3,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { mongoDBConfig } from './config/db';
-import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
-import { TopicsModule } from './modules/topics/topics.module';
-import { OrganizationsModule } from './modules/organizations/organizations.module';
-import { MailModule } from './modules/mail/mail.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { TopicsModule } from './topics/topics.module';
+import { OrganizationsModule } from './organizations/organizations.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
