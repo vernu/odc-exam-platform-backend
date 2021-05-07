@@ -8,21 +8,21 @@ export class CreateOrganizationDTO {
 }
 export class CreateOrganizationResponseDTO {
   success: boolean;
-  organization?: Organization;
+  data?: Organization;
   error?: string;
   message?: string;
 }
 export class ShowOrganizationsResponseDTO {
   success: boolean;
   count?: number;
-  organizations?: Organization[];
+  data?: Organization[];
   error?: string;
   message?: string;
 }
 
 export class DeleteOrganizationResponseDTO {
   success: boolean;
-  organization?: Organization;
+  data?: Organization;
   error?: string;
   message?: string;
 }

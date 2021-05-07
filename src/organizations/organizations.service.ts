@@ -35,7 +35,7 @@ export class OrganizationsService {
       return {
         success: true,
         count: organizations.length,
-        organizations,
+        data: organizations,
       };
     } catch (e) {
       throw new HttpException(
@@ -83,7 +83,7 @@ export class OrganizationsService {
         return {
           success: true,
           message: 'Organizer has been added',
-          organization: newOrganization,
+          data: newOrganization,
         };
       } catch (e) {
         throw new HttpException(
@@ -118,7 +118,7 @@ export class OrganizationsService {
       });
       return {
         success: true,
-        organization,
+        data: organization,
         message: 'organization deleted',
       };
     } catch (e) {
@@ -137,7 +137,6 @@ export class OrganizationsService {
     examinerName,
     examinerEmail,
   }) {
-    
     var user = await this.userModel.findOne({ email: examinerEmail });
     if (!user) {
       const password = this.usersService.generateRandomPassword();
@@ -169,7 +168,7 @@ export class OrganizationsService {
       return {
         success: true,
         message: 'examiner has been added to organization',
-        organization,
+        data: organization,
       };
     }
   }
