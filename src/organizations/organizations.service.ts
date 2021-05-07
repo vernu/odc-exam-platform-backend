@@ -23,6 +23,10 @@ export class OrganizationsService {
     private organizationModel: Model<OrganizationDocument>,
   ) {}
 
+  async findOrganizationById(id: string) {
+    return await this.organizationModel.findById(id);
+  }
+
   async showOrganizations(): Promise<ShowOrganizationsResponseDTO> {
     try {
       const organizations = await this.organizationModel
@@ -133,6 +137,7 @@ export class OrganizationsService {
     examinerName,
     examinerEmail,
   }) {
+    
     var user = await this.userModel.findOne({ email: examinerEmail });
     if (!user) {
       const password = this.usersService.generateRandomPassword();
