@@ -6,6 +6,11 @@ export const mongoDBConfig = {
   autoIndex: true,
 };
 
+export const jwtConfig = {
+  secret: process.env.JWT_SECRET,
+  signOptions: { expiresIn: '90d' },
+};
+
 // export const mailTransportConfig = 'smtps://user@example.com:topsecret@smtp.example.com';
 export const mailTransportConfig = {
   host: process.env.MAIL_HOST,
