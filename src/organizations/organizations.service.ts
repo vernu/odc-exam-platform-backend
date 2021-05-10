@@ -31,7 +31,7 @@ export class OrganizationsService {
     try {
       const organizations = await this.organizationModel
         .find()
-        .populate(['admin']);
+        .populate(['admin','examiners']);
       return {
         success: true,
         count: organizations.length,
