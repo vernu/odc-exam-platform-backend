@@ -27,11 +27,17 @@ export class OrganizationsService {
     return await this.organizationModel.findById(id);
   }
 
+  async findOrganizationByAdmin(userId: string) {
+    return await this.organizationModel
+      .find()
+      .where({ admin: { _id: userId } });
+  }
+
   async showOrganizations(): Promise<ShowOrganizationsResponseDTO> {
     try {
       const organizations = await this.organizationModel
         .find()
-        .populate(['admin','examiners']);
+        .populate(['admin', 'examiners']);
       return {
         success: true,
         count: organizations.length,
