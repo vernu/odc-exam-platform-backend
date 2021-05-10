@@ -11,6 +11,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import { OrganizationsService } from 'src/organizations/organizations.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private usersService: UsersService,
     private jwtService: JwtService,
+    private organizationsService: OrganizationsService,
   ) {}
 
   async initialSuperAdminSetup(
@@ -62,7 +64,7 @@ export class AuthService {
     }
   }
 
-  async login(credentials: LoginDTO): Promise<LoginResponseDTO> {
+  async login(credentials: LoginDTO): Promise<any> {
     const { email, password } = credentials;
     if (email == null || password == null) {
       throw new HttpException(
@@ -87,12 +89,17 @@ export class AuthService {
       if (await bcrypt.compare(password, user.password)) {
         const payload = { userId: user._id, email: user.email };
         const accessToken = this.jwtService.sign(payload);
-        return {
+        var res = {
           success: true,
           message: 'logged in successfully',
-          user,
           accessToken,
+          user,
         };
+        if(user.role === 'organization-admin'){
+          const organizations = await this.organizationsService.findOrganizationByAdmin(user._id);
+          return {...res, ...{organizations}}
+        }
+        return res;
       } else {
         throw new HttpException(
           {

@@ -1,3 +1,4 @@
+import { Organization } from 'src/organizations/schemas/organization.schema';
 import { User } from '../../users/schemas/user.schema';
 
 export class InitialSuperAdminSetupDTO {
@@ -21,6 +22,7 @@ export class LoginDTO {
 export class LoginResponseDTO {
   success: boolean;
   user?: User;
+  organizations?: [Organization]
   accessToken?: string;
   message?: string;
   error?: string;

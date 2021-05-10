@@ -24,6 +24,6 @@ import {
   ],
   controllers: [OrganizationsController],
   providers: [OrganizationsService],
-  exports: [MongooseModule],
+  exports: [MongooseModule, OrganizationsService],
 })
 export class OrganizationsModule {}
