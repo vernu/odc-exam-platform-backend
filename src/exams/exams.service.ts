@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrganizationsService } from 'src/organizations/organizations.service';
@@ -51,5 +51,25 @@ export class ExamsService {
       message: 'exam has been created',
       data: newExam,
     };
+  }
+
+  async findExamById(examId: string) {
+    try {
+      const exam = await this.examModel
+        .findById(examId)
+        .populate(['organization', 'questions']);
+      return {
+        success: true,
+        data: exam,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'could not find exam ',
+        },
+        500,
+      );
+    }
   }
 }
