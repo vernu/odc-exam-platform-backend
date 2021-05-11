@@ -5,4 +5,4 @@ RUN npm i -g nodemon @nestjs/cli
 RUN npm i
 COPY . .
 EXPOSE $PORT
-CMD [ "npm", "run", "start:dev" ]--
+CMD [ "npm", "run", "start:dev" ]
