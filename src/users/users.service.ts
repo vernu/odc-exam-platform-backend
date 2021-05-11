@@ -1,29 +1,58 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import { RegisterExaminerResponseDTO } from './dto/user.dto';
-import { MailService } from 'src/mail/mail.service';
+import { MailService } from '../mail/mail.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private mailService: MailService,
+    @Inject(forwardRef(() => OrganizationsService))
+    private organizationsService: OrganizationsService,
   ) {}
-  async registerExaminer(examinerData): Promise<RegisterExaminerResponseDTO> {
-    const { name, email } = examinerData;
+  async registerExaminer(examinerData): Promise<any> {
+    const { name, email, organizationId } = examinerData;
+    var organization = null;
 
-    const userExists = await this.findUserByEmail(email);
-    if (userExists) {
+    organization = (
+      await this.organizationsService.findOrganizationById(organizationId)
+    ).data;
+    
+    if (organization == null) {
       throw new HttpException(
         {
           success: false,
-          error: 'email already taken',
+          error: 'organization not found',
         },
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.NOT_FOUND,
       );
+    }
+
+    const userExists = await this.findUserByEmail(email);
+    if (userExists) {
+      return this.organizationsService.addExaminerToOrganization({
+        organizationId: organization._id,
+        examinerName: name,
+        examinerEmail: email,
+      });
+      // throw new HttpException(
+      //   {
+      //     success: false,
+      //     error: 'email already taken',
+      //   },
+      //   HttpStatus.BAD_REQUEST,
+      // );
     }
     const password = this.generateRandomPassword();
 
