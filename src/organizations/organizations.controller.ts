@@ -24,6 +24,12 @@ export class OrganizationsController {
   showOrganizations() {
     return this.organizationsService.showOrganizations();
   }
+  @Get(':organizationId')
+  @UseGuards()
+  getOrganizationById(@Param('organizationId') organizationId: string) {
+    return this.organizationsService.findOrganizationById(organizationId);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
   createOrganization(@Body() createOrganizationDTO: CreateOrganizationDTO) {
