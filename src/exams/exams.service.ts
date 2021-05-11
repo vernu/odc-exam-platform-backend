@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { OrganizationsService } from 'src/organizations/organizations.service';
 import {
   Organization,
   OrganizationDocument,
-} from 'src/organizations/schemas/organization.schema';
-import { User, UserDocument } from 'src/users/schemas/user.schema';
-import { UsersService } from 'src/users/users.service';
+} from '../organizations/schemas/organization.schema';
+import { User, UserDocument } from '../users/schemas/user.schema';
+import { UsersService } from '../users/users.service';
 import { CreateExamDTO } from './dto/exam.dto';
 import { Exam, ExamDocument } from './schemas/exam.schema';
 import { Question, QuestionDocument } from './schemas/question.schema';
@@ -15,6 +16,7 @@ import { Question, QuestionDocument } from './schemas/question.schema';
 export class ExamsService {
   constructor(
     private usersService: UsersService,
+    private organizationsService: OrganizationsService,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Exam.name) private examModel: Model<ExamDocument>,
     @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
@@ -24,11 +26,21 @@ export class ExamsService {
   async createExam(examData: CreateExamDTO) {
     var questions: Question[] = [];
     examData.questions.map(async (question) => {
-      const newQuestion = new this.questionModel(question);
+      const newQuestion = new this.questionModel({
+        type: question.type,
+        question: question.question,
+      });
+
       await newQuestion.save();
-      questions.push(question);
+      questions.push(newQuestion);
     });
+
     const newExam = new this.examModel({
+      organization: (
+        await this.organizationsService.findOrganizationById(
+          examData.organizationId,
+        )
+      ).data,
       title: examData.title,
       description: examData.description,
       questions,
