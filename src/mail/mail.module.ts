@@ -1,20 +1,13 @@
 import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 import { Module } from '@nestjs/common';
 import { join } from 'path';
+import { mailTransportConfig } from '../config/config';
 import { MailService } from './mail.service';
 
 @Module({
   imports: [
     MailerModule.forRoot({
-      // transport: 'smtps://user@example.com:topsecret@smtp.example.com',
-      transport: {
-        host: process.env.MAIL_HOST,
-        secure: false,
-        auth: {
-          user: process.env.MAIL_USERNAME,
-          pass: process.env.MAIL_PASSWORD,
-        },
-      },
+      transport: mailTransportConfig,
       defaults: {
         from: `No Reply ${process.env.MAIL_FROM}`,
       },

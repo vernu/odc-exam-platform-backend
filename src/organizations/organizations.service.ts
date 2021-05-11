@@ -24,7 +24,20 @@ export class OrganizationsService {
   ) {}
 
   async findOrganizationById(id: string) {
-    return await this.organizationModel.findById(id);
+    try {
+      const organization = await this.organizationModel
+        .findById(id)
+        .populate(['admin', 'examiners']);
+      return {
+        success: true,
+        data: organization,
+      };
+    } catch (e) {
+      throw new HttpException(
+        { success: false, error: 'failed to get organization' },
+        500,
+      );
+    }
   }
 
   async findOrganizationByAdmin(userId: string) {

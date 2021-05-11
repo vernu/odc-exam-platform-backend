@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  db:
+    image: mongo
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb-data:/data/db
+
+  backend:
+    build:
+      context: .
+      # dockerfile: Dockerfile
+    container_name: odc-ep-backend
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - ./:/usr/src/app
+    depends_on: 
+        - db
+    # command: npm run start:dev
