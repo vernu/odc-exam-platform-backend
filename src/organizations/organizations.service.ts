@@ -25,7 +25,9 @@ export class OrganizationsService {
 
   async findOrganizationById(id: string) {
     try {
-      const organization = await this.organizationModel.findById(id);
+      const organization = await this.organizationModel
+        .findById(id)
+        .populate(['admin', 'examiners']);
       return {
         success: true,
         data: organization,
