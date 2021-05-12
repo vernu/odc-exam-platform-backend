@@ -1,6 +1,10 @@
-import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { InitialSuperAdminSetupDTO, LoginDTO, ResetPasswordDTO } from './dto/auth.dto';
+import {
+  InitialSuperAdminSetupDTO,
+  LoginDTO,
+  ResetPasswordDTO,
+} from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -19,9 +23,12 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  resetPassword(@Param('token') token: string, @Body() resetPasswordDTO: ResetPasswordDTO) {
+  resetPassword(
+    @Query('token') token: string,
+    @Body() resetPasswordDTO: ResetPasswordDTO,
+  ) {
     if (token) {
-      return this.authService.resetPassword({...resetPasswordDTO, token});
+      return this.authService.resetPassword({ ...resetPasswordDTO, token });
     } else {
       return this.authService.requestPasswordReset(resetPasswordDTO);
     }
