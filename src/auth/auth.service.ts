@@ -97,7 +97,7 @@ export class AuthService {
         };
         if(user.role === 'organization-admin'){
           const organizations = await this.organizationsService.findOrganizationByAdmin(user._id);
-          return {...res, ...{organizations}}
+          return {...res, organizations}
         }
         return res;
       } else {

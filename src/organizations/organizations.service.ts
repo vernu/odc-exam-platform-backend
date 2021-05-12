@@ -1,4 +1,10 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../users/schemas/user.schema';
@@ -42,9 +48,7 @@ export class OrganizationsService {
   }
 
   async findOrganizationByAdmin(userId: string) {
-    return await this.organizationModel
-      .find()
-      .where({ admin: { _id: userId } });
+    return await this.organizationModel.find().where({ admin: userId });
   }
 
   async showOrganizations(): Promise<ShowOrganizationsResponseDTO> {
