@@ -30,7 +30,8 @@ export class LoginResponseDTO {
 
 export class ResetPasswordDTO {
   email: string;
-  newPassword: string;
+  newPassword?: string;
+  secretCode?: string;
 }
 export class ResetPasswordResponseDTO {
   success: boolean;

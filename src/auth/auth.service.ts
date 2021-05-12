@@ -15,6 +15,10 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { MailService } from 'src/mail/mail.service';
+import {
+  PasswordReset,
+  PasswordResetDocument,
+} from './schemas/password-reset.schema';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +28,8 @@ export class AuthService {
     private jwtService: JwtService,
     private organizationsService: OrganizationsService,
     private mailService: MailService,
+    @InjectModel(PasswordReset.name)
+    private passwordResetModel: Model<PasswordResetDocument>,
   ) {}
 
   async initialSuperAdminSetup(
@@ -118,9 +124,7 @@ export class AuthService {
     }
   }
 
-  async requestPasswordReset(
-    resetPasswordDTO: ResetPasswordDTO,
-  ): Promise<ResetPasswordResponseDTO> {
+  async requestPasswordReset(resetPasswordDTO: ResetPasswordDTO): Promise<any> {
     const { email } = resetPasswordDTO;
     const user = await this.usersService.findUserByEmail(email);
     if (!user) {
@@ -132,27 +136,47 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const payload = {
-      userId: user._id,
-      email: user.email,
-      pwReset: true,
-    };
-    const resetToken = this.jwtService.sign(payload, {
-      expiresIn: '1h',
+
+    // const payload = {
+    //   userId: user._id,
+    //   email: user.email,
+    //   pwReset: true,
+    // };
+    // const resetToken = this.jwtService.sign(payload, {
+    //   expiresIn: '1h',
+    // });
+
+    const secretCode = this.getRandomInt(100000, 999000); // six digit random num
+
+    const passwordReset = new this.passwordResetModel({
+      user,
+      secretCode,
+      expiresAt: Date.now() + 1 / 24,
     });
+
+    await passwordReset.save();
+
+    console.log(passwordReset);
+
     this.mailService.sendEmail({
       to: user.email,
       subject: 'Reset your password',
-      html: `you have requested to to reset your password\n click the link to reset your password \n https://FRONTEND_URL/reset-password?token=${resetToken} \n note that the link expires in 1 hour`,
+      html: `<h3>Hi ${user.name},</h3>you have requested to to reset your password<br> your secrete code is <b>${secretCode}</b>  <hr>note that the code expires in 1 hour`,
     });
 
     return {
       success: true,
-      message: `a password reset link has been sent to  ${user.email}, it will expire in 1 hour`,
+      message: `a password reset secrete code has been sent to  ${user.email}, it will expire in 1 hour`,
     };
   }
 
-  async resetPassword({ token, newPassword }): Promise<any> {
-    
+  getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  async resetPassword(resetPasswordDTO: ResetPasswordDTO): Promise<any> {
+    const { email, secretCode, newPassword } = resetPasswordDTO;
   }
 }
