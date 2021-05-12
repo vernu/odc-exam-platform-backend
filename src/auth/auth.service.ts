@@ -7,11 +7,14 @@ import {
   InitialSuperAdminSetupResponsDTO,
   LoginDTO,
   LoginResponseDTO,
+  ResetPasswordDTO,
+  ResetPasswordResponseDTO,
 } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { OrganizationsService } from 'src/organizations/organizations.service';
+import { OrganizationsService } from '../organizations/organizations.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +23,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private organizationsService: OrganizationsService,
+    private mailService: MailService,
   ) {}
 
   async initialSuperAdminSetup(
@@ -95,9 +99,11 @@ export class AuthService {
           accessToken,
           user,
         };
-        if(user.role === 'organization-admin'){
-          const organizations = await this.organizationsService.findOrganizationByAdmin(user._id);
-          return {...res, ...{organizations}}
+        if (user.role === 'organization-admin') {
+          const organizations = await this.organizationsService.findOrganizationByAdmin(
+            user._id,
+          );
+          return { ...res, ...{ organizations } };
         }
         return res;
       } else {
@@ -110,5 +116,43 @@ export class AuthService {
         );
       }
     }
+  }
+
+  async requestPasswordReset(
+    resetPasswordDTO: ResetPasswordDTO,
+  ): Promise<ResetPasswordResponseDTO> {
+    const { email } = resetPasswordDTO;
+    const user = await this.usersService.findUserByEmail(email);
+    if (!user) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'user not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const payload = {
+      userId: user._id,
+      email: user.email,
+      pwReset: true,
+    };
+    const resetToken = this.jwtService.sign(payload, {
+      expiresIn: '1h',
+    });
+    this.mailService.sendEmail({
+      to: user.email,
+      subject: 'Reset your password',
+      html: `you have requested to to reset your password\n click the link to reset your password \n https://FRONTEND_URL/reset-password?token=${resetToken} \n note that the link expires in 1 hour`,
+    });
+
+    return {
+      success: true,
+      message: `a password reset link has been sent to  ${user.email}, it will expire in 1 hour`,
+    };
+  }
+
+  async resetPassword({ token, newPassword }): Promise<any> {
+    
   }
 }

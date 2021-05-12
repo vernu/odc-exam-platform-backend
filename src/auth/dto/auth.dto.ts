@@ -22,8 +22,18 @@ export class LoginDTO {
 export class LoginResponseDTO {
   success: boolean;
   user?: User;
-  organizations?: [Organization]
+  organizations?: [Organization];
   accessToken?: string;
+  message?: string;
+  error?: string;
+}
+
+export class ResetPasswordDTO {
+  email: string;
+  newPassword: string;
+}
+export class ResetPasswordResponseDTO {
+  success: boolean;
   message?: string;
   error?: string;
 }
