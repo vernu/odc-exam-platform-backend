@@ -43,7 +43,7 @@ export class OrganizationsController {
   }
 
   @Post(':organizationId/add-examiner')
-  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @UseGuards(JwtAuthGuard)
   addExaminerToOrganization(
     @Param('organizationId') organizationId: string,
     @Body() addExaminerToOrganizationDTO: AddExaminerToOrganizationDTO,
