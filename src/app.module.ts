@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { TopicsModule } from './topics/topics.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { MailModule } from './mail/mail.module';
+import { ExamsModule } from './exams/exams.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MailModule } from './mail/mail.module';
     TopicsModule,
     OrganizationsModule,
     MailModule,
+    ExamsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
