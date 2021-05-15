@@ -11,7 +11,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { OrganizationsService } from 'src/organizations/organizations.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 
 @Injectable()
 export class AuthService {

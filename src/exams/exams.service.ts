@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { OrganizationsService } from 'src/organizations/organizations.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 import {
   Organization,
   OrganizationDocument,

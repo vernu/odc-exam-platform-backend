@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { OrganizationsModule } from 'src/organizations/organizations.module';
+import { OrganizationsModule } from '../organizations/organizations.module';
 import { MailModule } from '../mail/mail.module';
 import { User, UserSchema } from './schemas/user.schema';
 import { UsersController } from './users.controller';
