@@ -21,63 +21,6 @@ export class UsersService {
     @Inject(forwardRef(() => OrganizationsService))
     private organizationsService: OrganizationsService,
   ) {}
-  async registerExaminer(examinerData): Promise<any> {
-    const { name, email, organizationId } = examinerData;
-    var organization = null;
-
-    organization = await this.organizationsService.findOrganizationById(
-      organizationId,
-    );
-
-    if (organization == null) {
-      throw new HttpException(
-        {
-          success: false,
-          error: 'organization not found',
-        },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    const userExists = await this.findUserByEmail(email);
-    if (userExists) {
-      return this.organizationsService.addExaminerToOrganization({
-        organizationId: organization._id,
-        examinerName: name,
-        examinerEmail: email,
-      });
-      // throw new HttpException(
-      //   {
-      //     success: false,
-      //     error: 'email already taken',
-      //   },
-      //   HttpStatus.BAD_REQUEST,
-      // );
-    }
-    const password = this.generateRandomPassword();
-
-    try {
-      const newExaminer = await this.createUser({
-        name,
-        email,
-        role: 'examiner',
-        password,
-      });
-      return {
-        success: true,
-        user: newExaminer,
-        message: 'Examiner account created successfully',
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          success: false,
-          error: e.toString(),
-        },
-        500,
-      );
-    }
-  }
 
   async findUserById(id: string) {
     return await this.userModel.findById(id);
