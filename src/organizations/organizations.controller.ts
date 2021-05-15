@@ -15,12 +15,13 @@ import {
 } from './dto/organization.dto';
 import { OrganizationsService } from './organizations.service';
 import * as bcrypt from 'bcrypt';
+import { CanViewAllOrganizations } from './guards/can-view-all-organizations.guard';
 
 @Controller('organizations')
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
   @Get()
-  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @UseGuards(JwtAuthGuard, CanViewAllOrganizations)
   showOrganizations() {
     return this.organizationsService.showOrganizations();
   }
