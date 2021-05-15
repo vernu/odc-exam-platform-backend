@@ -15,6 +15,7 @@ import {
   AddExaminerToOrganizationDTO,
   CreateOrganizationDTO,
   CreateOrganizationResponseDTO,
+  DeleteOrganizationResponseDTO,
   FindAnOrganizationResponseDTO,
   ShowOrganizationsResponseDTO,
 } from './dto/organization.dto';
@@ -76,7 +77,9 @@ export class OrganizationsController {
 
   @Delete(':organizationId')
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
-  async deleteOrganization(@Param('organizationId') organizationId: string) {
+  async deleteOrganization(
+    @Param('organizationId') organizationId: string,
+  ): Promise<DeleteOrganizationResponseDTO> {
     return {
       success: true,
       message: 'organization deleted',
