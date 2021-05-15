@@ -89,14 +89,21 @@ export class OrganizationsController {
 
   @Post(':organizationId/add-examiner')
   @UseGuards(JwtAuthGuard, CanAddExaminerToAnOrganization)
-  addExaminerToOrganization(
+  async addExaminerToOrganization(
     @Param('organizationId') organizationId: string,
     @Body() addExaminerToOrganizationDTO: AddExaminerToOrganizationDTO,
   ) {
-    return this.organizationsService.addExaminerToOrganization({
-      organizationId,
-      examinerName: addExaminerToOrganizationDTO.examinerName,
-      examinerEmail: addExaminerToOrganizationDTO.examinerEmail,
-    });
+    const organization = await this.organizationsService.addExaminerToOrganization(
+      {
+        organizationId,
+        examinerName: addExaminerToOrganizationDTO.examinerName,
+        examinerEmail: addExaminerToOrganizationDTO.examinerEmail,
+      },
+    );
+    return {
+      success: true,
+      message: 'examiner has been added to organization',
+      data: organization,
+    };
   }
 }

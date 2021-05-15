@@ -148,6 +148,16 @@ export class OrganizationsService {
   }) {
     var user = await this.userModel.findOne({ email: examinerEmail });
     if (!user) {
+      if (examinerName == null) {
+        throw new HttpException(
+          {
+            success: false,
+            error: 'Examiner name cannot be empty',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       const password = this.usersService.generateRandomPassword();
       user = await this.usersService.createUser({
         name: examinerName,
@@ -174,11 +184,7 @@ export class OrganizationsService {
         .findById(organizationId)
         .populate(['examiners']);
 
-      return {
-        success: true,
-        message: 'examiner has been added to organization',
-        data: organization,
-      };
+      return organization;
     }
   }
 }
