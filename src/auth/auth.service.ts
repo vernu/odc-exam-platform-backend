@@ -85,7 +85,7 @@ export class AuthService {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    const user = await this.usersService.findUserByEmail(email);
+    const user = await this.usersService.findUserByEmail(email, true);
 
     if (!user) {
       throw new HttpException(
@@ -103,7 +103,7 @@ export class AuthService {
           success: true,
           message: 'logged in successfully',
           accessToken,
-          user,
+          user: await this.usersService.findUserByEmail(email),
         };
         if (user.role === 'organization-admin') {
           const organizations = await this.organizationsService.findOrganizationByAdmin(

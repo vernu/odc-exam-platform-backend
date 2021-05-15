@@ -10,7 +10,7 @@ export class User {
   name: string;
   @Prop({ type: String, required: true, unique: true, lowercase: true })
   email: string;
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, select: false })
   password: string;
   @Prop({ type: String, required: true, default: 'regular', lowercase: true })
   role: string;
