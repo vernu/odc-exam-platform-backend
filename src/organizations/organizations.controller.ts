@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   AddExaminerToOrganizationDTO,
   CreateOrganizationDTO,
+  FindAnOrganizationResponseDTO,
   ShowOrganizationsResponseDTO,
 } from './dto/organization.dto';
 import { OrganizationsService } from './organizations.service';
@@ -36,7 +37,9 @@ export class OrganizationsController {
   }
   @Get(':organizationId')
   @UseGuards(JwtAuthGuard, CanViewAnOrganization)
-  async findOrganizationById(@Param('organizationId') organizationId: string) {
+  async findOrganizationById(
+    @Param('organizationId') organizationId: string,
+  ): Promise<FindAnOrganizationResponseDTO> {
     const organization = await this.organizationsService.findOrganizationById(
       organizationId,
     );

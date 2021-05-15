@@ -1,4 +1,7 @@
-import { Organization } from '../schemas/organization.schema';
+import {
+  Organization,
+  OrganizationDocument,
+} from '../schemas/organization.schema';
 
 export class CreateOrganizationDTO {
   organizationName: string;
@@ -30,4 +33,10 @@ export class DeleteOrganizationResponseDTO {
 export class AddExaminerToOrganizationDTO {
   examinerName: string;
   examinerEmail: string;
+}
+export class FindAnOrganizationResponseDTO {
+  success: true;
+  data?: OrganizationDocument;
+  message?: string;
+  error?: string;
 }
