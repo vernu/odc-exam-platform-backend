@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import {
   InitialSuperAdminSetupDTO,
   LoginDTO,
+  LoginResponseDTO,
   ResetPasswordDTO,
 } from './dto/auth.dto';
 
@@ -18,7 +19,7 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginDTO: LoginDTO) {
+  async login(@Body() loginDTO: LoginDTO): Promise<LoginResponseDTO> {
     return {
       success: true,
       message: 'logged in successfully',
