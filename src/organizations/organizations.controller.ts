@@ -16,6 +16,7 @@ import {
 import { OrganizationsService } from './organizations.service';
 import * as bcrypt from 'bcrypt';
 import { CanViewAllOrganizations } from './guards/can-view-all-organizations.guard';
+import { CanViewAnOrganization } from './guards/can-view-an-organization.guard';
 
 @Controller('organizations')
 export class OrganizationsController {
@@ -26,7 +27,7 @@ export class OrganizationsController {
     return this.organizationsService.showOrganizations();
   }
   @Get(':organizationId')
-  @UseGuards()
+  @UseGuards(JwtAuthGuard, CanViewAnOrganization)
   getOrganizationById(@Param('organizationId') organizationId: string) {
     return this.organizationsService.findOrganizationById(organizationId);
   }
