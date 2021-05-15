@@ -24,15 +24,14 @@ export class ExamsService {
     private organizationModel: Model<OrganizationDocument>,
   ) {}
   async createExam(examData: CreateExamDTO) {
-    var questions: Question[] = [];
-    examData.questions.map(async (question) => {
+    var questions = [];
+    examData.questions.map((question) => {
       const newQuestion = new this.questionModel({
         type: question.type,
         question: question.question,
       });
-
-      await newQuestion.save();
-      questions.push(newQuestion);
+      newQuestion.save();
+      questions = [...questions, newQuestion];
     });
 
     const newExam = new this.examModel({
