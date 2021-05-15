@@ -61,8 +61,16 @@ export class OrganizationsController {
 
   @Post()
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
-  createOrganization(@Body() createOrganizationDTO: CreateOrganizationDTO) {
-    return this.organizationsService.createOrganization(createOrganizationDTO);
+  async createOrganization(
+    @Body() createOrganizationDTO: CreateOrganizationDTO,
+  ) {
+    const organization = await this.organizationsService.createOrganization(
+      createOrganizationDTO,
+    );
+    return {
+      success: true,
+      data: organization,
+    };
   }
 
   @Delete(':organizationId')

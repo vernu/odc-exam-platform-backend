@@ -36,7 +36,6 @@ export class OrganizationsService {
         .findById(id)
         .populate(['admin', 'examiners']);
       return organization;
-      
     } catch (e) {
       throw new HttpException(
         { success: false, error: 'failed to get organization' },
@@ -66,54 +65,42 @@ export class OrganizationsService {
     }
   }
 
-  async createOrganization(
-    organizationInfo: CreateOrganizationDTO,
-  ): Promise<CreateOrganizationResponseDTO> {
-    const userExists = await this.userModel.findOne({
+  async createOrganization(organizationInfo: CreateOrganizationDTO) {
+    var user = await this.userModel.findOne({
       email: organizationInfo.adminEmail,
     });
 
-    if (userExists) {
-      throw new HttpException(
-        {
-          success: false,
-          error: 'user with  the same email exists',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    } else {
-      const password = this.usersService.generateRandomPassword();
-
-      try {
-        const newUser = await this.usersService.createUser({
-          name: organizationInfo.adminName,
-          email: organizationInfo.adminEmail,
-          password,
-          role: 'organization-admin',
-        });
-
-        const newOrganization = new this.organizationModel({
-          name: organizationInfo.organizationName,
-          description: organizationInfo.organizationDescription,
-          admin: newUser,
-        });
-        await newOrganization.save();
-        return {
-          success: true,
-          message: 'Organizer has been added',
-          data: newOrganization,
-        };
-      } catch (e) {
+    if (!user) {
+      if (organizationInfo.adminName == null) {
         throw new HttpException(
           {
             success: false,
-            error: e.toString(),
+            error: 'Admin name cannot be empty',
           },
-          500,
+          HttpStatus.BAD_REQUEST,
         );
       }
+      const password = this.usersService.generateRandomPassword();
+
+      const newUser = await this.usersService.createUser({
+        name: organizationInfo.adminName,
+        email: organizationInfo.adminEmail,
+        password,
+        role: 'organization-admin',
+      });
+      user = newUser;
     }
+
+    const newOrganization = new this.organizationModel({
+      name: organizationInfo.organizationName,
+      description: organizationInfo.organizationDescription,
+      admin: user,
+    });
+
+    await newOrganization.save();
+    return newOrganization;
   }
+
   async deleteOrganization(
     organizationId: string,
   ): Promise<DeleteOrganizationResponseDTO> {
