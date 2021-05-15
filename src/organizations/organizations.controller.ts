@@ -12,6 +12,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   AddExaminerToOrganizationDTO,
   CreateOrganizationDTO,
+  ShowOrganizationsResponseDTO,
 } from './dto/organization.dto';
 import { OrganizationsService } from './organizations.service';
 import { CanViewAllOrganizations } from './guards/can-view-all-organizations.guard';
@@ -23,8 +24,13 @@ export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
   @Get()
   @UseGuards(JwtAuthGuard, CanViewAllOrganizations)
-  showOrganizations() {
-    return this.organizationsService.showOrganizations();
+  async getOrganizations(): Promise<ShowOrganizationsResponseDTO> {
+    const organizations = await this.organizationsService.getOrganizations();
+    return {
+      success: true,
+      count: organizations.length,
+      data: organizations,
+    };
   }
   @Get(':organizationId')
   @UseGuards(JwtAuthGuard, CanViewAnOrganization)

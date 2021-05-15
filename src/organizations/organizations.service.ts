@@ -51,16 +51,12 @@ export class OrganizationsService {
     return await this.organizationModel.find().where({ admin: userId });
   }
 
-  async showOrganizations(): Promise<ShowOrganizationsResponseDTO> {
+  async getOrganizations(): Promise<any> {
     try {
       const organizations = await this.organizationModel
         .find()
         .populate(['admin', 'examiners']);
-      return {
-        success: true,
-        count: organizations.length,
-        data: organizations,
-      };
+      return organizations;
     } catch (e) {
       throw new HttpException(
         {
