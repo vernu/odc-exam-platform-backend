@@ -97,8 +97,18 @@ export class OrganizationsService {
       admin: user,
     });
 
-    await newOrganization.save();
-    return newOrganization;
+    try {
+      await newOrganization.save();
+      return newOrganization;
+    } catch (e) {
+      throw new HttpException(
+        {
+          success: false,
+          error: `failed to create organization: ${e.toSting()}`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   async deleteOrganization(
