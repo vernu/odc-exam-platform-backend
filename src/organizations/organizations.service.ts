@@ -111,9 +111,7 @@ export class OrganizationsService {
     }
   }
 
-  async deleteOrganization(
-    organizationId: string,
-  ): Promise<DeleteOrganizationResponseDTO> {
+  async deleteOrganization(organizationId: string): Promise<any> {
     const organization = await this.organizationModel.findOne({
       _id: organizationId,
     });
@@ -131,18 +129,14 @@ export class OrganizationsService {
       await this.organizationModel.deleteOne({
         _id: organizationId,
       });
-      return {
-        success: true,
-        data: organization,
-        message: 'organization deleted',
-      };
+      return organization;
     } catch (e) {
       throw new HttpException(
         {
           success: false,
-          error: e.toString(),
+          error: `failed to delete organization: ${e.toString()}`,
         },
-        500,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }

@@ -76,8 +76,12 @@ export class OrganizationsController {
 
   @Delete(':organizationId')
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
-  deleteOrganization(@Param('organizationId') organizationId: string) {
-    return this.organizationsService.deleteOrganization(organizationId);
+  async deleteOrganization(@Param('organizationId') organizationId: string) {
+    return {
+      success: true,
+      message: 'organization deleted',
+      data: await this.organizationsService.deleteOrganization(organizationId),
+    };
   }
 
   @Post(':organizationId/add-examiner')
