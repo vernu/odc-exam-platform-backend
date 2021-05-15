@@ -35,11 +35,9 @@ export class ExamsService {
     });
 
     const newExam = new this.examModel({
-      organization: (
-        await this.organizationsService.findOrganizationById(
-          examData.organizationId,
-        )
-      ).data,
+      organization: await this.organizationsService.findOrganizationById(
+        examData.organizationId,
+      ),
       title: examData.title,
       description: examData.description,
       questions,

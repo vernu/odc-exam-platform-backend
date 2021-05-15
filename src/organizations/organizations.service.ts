@@ -35,10 +35,8 @@ export class OrganizationsService {
       const organization = await this.organizationModel
         .findById(id)
         .populate(['admin', 'examiners']);
-      return {
-        success: true,
-        data: organization,
-      };
+      return organization;
+      
     } catch (e) {
       throw new HttpException(
         { success: false, error: 'failed to get organization' },

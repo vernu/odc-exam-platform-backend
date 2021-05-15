@@ -25,10 +25,10 @@ export class UsersService {
     const { name, email, organizationId } = examinerData;
     var organization = null;
 
-    organization = (
-      await this.organizationsService.findOrganizationById(organizationId)
-    ).data;
-    
+    organization = await this.organizationsService.findOrganizationById(
+      organizationId,
+    );
+
     if (organization == null) {
       throw new HttpException(
         {

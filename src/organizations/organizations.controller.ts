@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   UseGuards,
@@ -34,8 +36,24 @@ export class OrganizationsController {
   }
   @Get(':organizationId')
   @UseGuards(JwtAuthGuard, CanViewAnOrganization)
-  getOrganizationById(@Param('organizationId') organizationId: string) {
-    return this.organizationsService.findOrganizationById(organizationId);
+  async findOrganizationById(@Param('organizationId') organizationId: string) {
+    const organization = await this.organizationsService.findOrganizationById(
+      organizationId,
+    );
+    if (organization) {
+      return {
+        success: true,
+        data: organization,
+      };
+    } else {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Organization not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
   @Post()
