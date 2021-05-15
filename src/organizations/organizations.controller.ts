@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   AddExaminerToOrganizationDTO,
   CreateOrganizationDTO,
+  CreateOrganizationResponseDTO,
   FindAnOrganizationResponseDTO,
   ShowOrganizationsResponseDTO,
 } from './dto/organization.dto';
@@ -63,7 +64,7 @@ export class OrganizationsController {
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
   async createOrganization(
     @Body() createOrganizationDTO: CreateOrganizationDTO,
-  ) {
+  ): Promise<CreateOrganizationResponseDTO> {
     const organization = await this.organizationsService.createOrganization(
       createOrganizationDTO,
     );
