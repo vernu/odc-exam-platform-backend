@@ -14,9 +14,9 @@ import {
   CreateOrganizationDTO,
 } from './dto/organization.dto';
 import { OrganizationsService } from './organizations.service';
-import * as bcrypt from 'bcrypt';
 import { CanViewAllOrganizations } from './guards/can-view-all-organizations.guard';
 import { CanViewAnOrganization } from './guards/can-view-an-organization.guard';
+import { CanAddExaminerToAnOrganization } from './guards/can-add-examiner-to-an-organization.guard';
 
 @Controller('organizations')
 export class OrganizationsController {
@@ -45,7 +45,7 @@ export class OrganizationsController {
   }
 
   @Post(':organizationId/add-examiner')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, CanAddExaminerToAnOrganization)
   addExaminerToOrganization(
     @Param('organizationId') organizationId: string,
     @Body() addExaminerToOrganizationDTO: AddExaminerToOrganizationDTO,
