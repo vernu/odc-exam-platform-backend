@@ -18,8 +18,12 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() loginDTO: LoginDTO) {
-    return this.authService.login(loginDTO);
+  async login(@Body() loginDTO: LoginDTO) {
+    return {
+      success: true,
+      message: 'logged in successfully',
+      ...(await this.authService.login(loginDTO)),
+    };
   }
 
   @Post('reset-password')

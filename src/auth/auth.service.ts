@@ -100,8 +100,6 @@ export class AuthService {
         const payload = { userId: user._id, email: user.email };
         const accessToken = this.jwtService.sign(payload);
         var res = {
-          success: true,
-          message: 'logged in successfully',
           accessToken,
           user: await this.usersService.findUserByEmail(email),
         };
