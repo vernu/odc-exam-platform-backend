@@ -13,6 +13,7 @@ import { SuperAdminGuard } from '../auth/guards/super-admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   AddExaminerToOrganizationDTO,
+  AddExaminerToOrganizationResponseDTO,
   CreateOrganizationDTO,
   CreateOrganizationResponseDTO,
   DeleteOrganizationResponseDTO,
@@ -92,7 +93,7 @@ export class OrganizationsController {
   async addExaminerToOrganization(
     @Param('organizationId') organizationId: string,
     @Body() addExaminerToOrganizationDTO: AddExaminerToOrganizationDTO,
-  ) {
+  ): Promise<AddExaminerToOrganizationResponseDTO> {
     const organization = await this.organizationsService.addExaminerToOrganization(
       {
         organizationId,

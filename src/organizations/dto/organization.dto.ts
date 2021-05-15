@@ -34,6 +34,12 @@ export class AddExaminerToOrganizationDTO {
   examinerName: string;
   examinerEmail: string;
 }
+export class AddExaminerToOrganizationResponseDTO {
+  success: boolean;
+  error?: string;
+  message?: string;
+  data: Organization;
+}
 export class FindAnOrganizationResponseDTO {
   success: true;
   data?: OrganizationDocument;
