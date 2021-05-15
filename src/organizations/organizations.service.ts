@@ -104,7 +104,7 @@ export class OrganizationsService {
       throw new HttpException(
         {
           success: false,
-          error: `failed to create organization: ${e.toSting()}`,
+          error: `failed to create organization: ${e.toString()}`,
         },
         HttpStatus.BAD_REQUEST,
       );
