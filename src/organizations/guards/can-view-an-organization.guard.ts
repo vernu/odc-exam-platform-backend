@@ -15,7 +15,7 @@ export class CanViewAnOrganization implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
     if (user != null) {
-      if (user.role == 'supher-admin') {
+      if (user.role == 'super-admin') {
         return true;
       } else {
         //check if the user is the organization's admin or examiner
