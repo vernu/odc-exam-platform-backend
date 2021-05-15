@@ -2,6 +2,7 @@ import { Body, Controller, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   InitialSuperAdminSetupDTO,
+  InitialSuperAdminSetupResponsDTO,
   LoginDTO,
   LoginResponseDTO,
   ResetPasswordDTO,
@@ -12,10 +13,16 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('initial-super-admin-setup')
-  initialSuperAdminSetup(
+  async initialSuperAdminSetup(
     @Body() initialSuperAdminSetupDTO: InitialSuperAdminSetupDTO,
-  ) {
-    return this.authService.initialSuperAdminSetup(initialSuperAdminSetupDTO);
+  ): Promise<InitialSuperAdminSetupResponsDTO> {
+    return {
+      success: true,
+      message: 'super-admin account has been created',
+      ...(await this.authService.initialSuperAdminSetup(
+        initialSuperAdminSetupDTO,
+      )),
+    };
   }
 
   @Post('login')

@@ -34,7 +34,7 @@ export class AuthService {
 
   async initialSuperAdminSetup(
     adminData: InitialSuperAdminSetupDTO,
-  ): Promise<InitialSuperAdminSetupResponsDTO> {
+  ): Promise<any> {
     //check if there are no users in the db before initializing a super-admin account
     const anyUser = await this.userModel.findOne();
     if (anyUser) {
@@ -59,8 +59,7 @@ export class AuthService {
       const payload = { userId: newUser._id, email: newUser.email };
       const accessToken = this.jwtService.sign(payload);
       return {
-        success: true,
-        user: newUser,
+        user: await this.usersService.findUserByEmail(email),
         accessToken,
       };
     } catch (e) {
