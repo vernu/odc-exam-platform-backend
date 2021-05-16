@@ -9,11 +9,11 @@ export class ExamsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  createExam(@Body() createExamDTO: CreateExamDTO) {
+  async createExam(@Body() createExamDTO: CreateExamDTO) {
     return {
       success: true,
       message: 'exam has been created',
-      data: this.examsService.createExam(createExamDTO),
+      data: await this.examsService.createExam(createExamDTO),
     };
   }
 
