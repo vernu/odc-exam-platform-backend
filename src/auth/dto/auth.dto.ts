@@ -28,10 +28,20 @@ export class LoginResponseDTO {
   error?: string;
 }
 
+export class RequestPasswordResetDTO {
+  email: string;
+}
+export class RequestPasswordResetResponseDTO {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
 export class ResetPasswordDTO {
   email: string;
-  newPassword?: string;
   secretCode?: string;
+  resetToken?: string;
+  newPassword?: string;
 }
 export class ResetPasswordResponseDTO {
   success: boolean;

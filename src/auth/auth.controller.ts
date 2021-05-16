@@ -5,6 +5,7 @@ import {
   InitialSuperAdminSetupResponsDTO,
   LoginDTO,
   LoginResponseDTO,
+  RequestPasswordResetDTO,
   ResetPasswordDTO,
 } from './dto/auth.dto';
 
@@ -34,12 +35,20 @@ export class AuthController {
     };
   }
 
+  @Post('request-password-reset')
+  async requestPasswordReset(
+    @Body() requestPasswordResetDTO: RequestPasswordResetDTO,
+  ) {
+    return {
+      success: true,
+      message: await this.authService.requestPasswordReset(
+        requestPasswordResetDTO,
+      ),
+    };
+  }
+
   @Post('reset-password')
   resetPassword(@Body() resetPasswordDTO: ResetPasswordDTO) {
-    if (resetPasswordDTO.secretCode) {
-      return this.authService.resetPassword(resetPasswordDTO);
-    } else {
-      return this.authService.requestPasswordReset(resetPasswordDTO);
-    }
+    return this.authService.resetPassword(resetPasswordDTO);
   }
 }
