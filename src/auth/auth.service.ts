@@ -134,16 +134,17 @@ export class AuthService {
       );
     }
 
-    // const payload = {
-    //   userId: user._id,
-    //   email: user.email,
-    //   pwReset: true,
-    // };
-    // const resetToken = this.jwtService.sign(payload, {
-    //   expiresIn: '1h',
-    // });
-
     const secretCode = this.getRandomInt(100000, 999000); // six digit random num
+
+    const payload = {
+      userId: user._id,
+      email: user.email,
+      secretCode,
+      pwResetToken: true,
+    };
+    const resetToken = this.jwtService.sign(payload, {
+      expiresIn: '1h',
+    });
 
     const passwordReset = new this.passwordResetModel({
       user,
@@ -158,11 +159,13 @@ export class AuthService {
     this.mailService.sendEmail({
       to: user.email,
       subject: 'Reset your password',
-      html: `<h3>Hi ${user.name},</h3>you have requested to to reset your password<br> your secrete code is <b>${secretCode}</b>  <hr>note that the code expires in 1 hour`,
+      html: `<h3>Hi ${user.name},</h3>you have requested to to reset your password<br> 
+      your secrete code is <b>${secretCode}</b><br>
+      you can also  click this link to continue http://FRONTEND.URL/reset-password?token=${resetToken}<br> 
+      <hr>note that the code expires in 1 hour`,
     });
 
     return `A password reset email has been sent to  ${user.email}, Please check your email. Note that it will expire in 1 hour`;
-    
   }
 
   getRandomInt(min, max) {
