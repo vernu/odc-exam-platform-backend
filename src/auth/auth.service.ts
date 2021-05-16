@@ -4,11 +4,8 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import {
   InitialSuperAdminSetupDTO,
-  InitialSuperAdminSetupResponsDTO,
   LoginDTO,
-  LoginResponseDTO,
   ResetPasswordDTO,
-  ResetPasswordResponseDTO,
 } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
