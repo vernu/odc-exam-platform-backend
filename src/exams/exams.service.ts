@@ -42,10 +42,20 @@ export class ExamsService {
       newQuestion.save();
       questions = [...questions, newQuestion];
     });
+    const organization = await this.organizationsService.findOrganizationById(
+      examData.organizationId,
+    );
+    if (!organization) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Organization not found',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const newExam = new this.examModel({
-      organization: await this.organizationsService.findOrganizationById(
-        examData.organizationId,
-      ),
+      organization,
       title: examData.title,
       description: examData.description,
       questions,
