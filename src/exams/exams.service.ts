@@ -1,4 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Scope,
+} from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrganizationsService } from '../organizations/organizations.service';
@@ -11,10 +18,12 @@ import { UsersService } from '../users/users.service';
 import { CreateExamDTO } from './dto/exam.dto';
 import { Exam, ExamDocument } from './schemas/exam.schema';
 import { Question, QuestionDocument } from './schemas/question.schema';
+import { Request } from 'express';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ExamsService {
   constructor(
+    @Inject(REQUEST) private readonly request: Request,
     private usersService: UsersService,
     private organizationsService: OrganizationsService,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
@@ -33,7 +42,6 @@ export class ExamsService {
       newQuestion.save();
       questions = [...questions, newQuestion];
     });
-
     const newExam = new this.examModel({
       organization: await this.organizationsService.findOrganizationById(
         examData.organizationId,
@@ -41,6 +49,7 @@ export class ExamsService {
       title: examData.title,
       description: examData.description,
       questions,
+      createdBy: this.request.user,
     });
     try {
       await newExam.save();
@@ -58,7 +67,9 @@ export class ExamsService {
 
   async findExam(exam) {
     try {
-      const result = await this.examModel.findOne(exam).populate('questions');
+      const result = await this.examModel
+        .findOne(exam)
+        .populate(['questions', 'createdBy']);
       if (!result) {
         throw new HttpException(
           {
