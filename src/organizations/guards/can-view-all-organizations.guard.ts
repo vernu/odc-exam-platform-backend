@@ -13,10 +13,10 @@ export class CanViewAllOrganizations implements CanActivate {
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    if (user != null && user.role == 'super-admin') {
+    if (user && user.role == 'super-admin') {
       return true;
     }
-    
+
     throw new HttpException(
       { success: false, error: 'unauthorized' },
       HttpStatus.UNAUTHORIZED,

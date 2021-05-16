@@ -14,7 +14,7 @@ export class CanViewAnOrganization implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    if (user != null) {
+    if (user) {
       if (user.role == 'super-admin') {
         return true;
       } else {
