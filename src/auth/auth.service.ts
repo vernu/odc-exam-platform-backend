@@ -152,7 +152,7 @@ export class AuthService {
 
     await passwordReset.save();
 
-    console.log(passwordReset);
+    console.log(secretCode);
 
     this.mailService.sendEmail({
       to: user.email,
@@ -173,6 +173,66 @@ export class AuthService {
   }
 
   async resetPassword(resetPasswordDTO: ResetPasswordDTO): Promise<any> {
-    const { email, secretCode, newPassword } = resetPasswordDTO;
+    const { email, secretCode, resetToken, newPassword } = resetPasswordDTO;
+
+    const user = await this.usersService.findUser({ email }, true);
+    if (!user) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'user does not exist',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const passwordReset = await this.passwordResetModel
+      .findOne()
+      .sort({
+        createdAt: -1,
+      })
+      .where({ user: user._id });
+    console.log(passwordReset);
+    if (!passwordReset) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'please request password reset first',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    } else {
+      if (await bcrypt.compare(secretCode, passwordReset.secretCode)) {
+        if (!newPassword) {
+          throw new HttpException(
+            {
+              success: false,
+              error: 'new password is required to continue',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await user.update({ password: hashedPassword });
+        return 'your password has been reset successfully';
+      } else {
+        throw new HttpException(
+          {
+            success: false,
+            error: 'invalid secret code',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+    if (!email) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'email cant be empty',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }
