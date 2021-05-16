@@ -42,12 +42,18 @@ export class ExamsService {
       description: examData.description,
       questions,
     });
-    await newExam.save();
-    return {
-      success: true,
-      message: 'exam has been created',
-      data: newExam,
-    };
+    try {
+      await newExam.save();
+      return await this.findExam({ _id: newExam._id });
+    } catch (e) {
+      throw new HttpException(
+        {
+          success: false,
+          error: `could not create exam : ${e.toString()}`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   async findExam(exam) {
