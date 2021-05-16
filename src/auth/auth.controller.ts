@@ -8,6 +8,7 @@ import {
   RequestPasswordResetDTO,
   RequestPasswordResetResponseDTO,
   ResetPasswordDTO,
+  ResetPasswordResponseDTO,
 } from './dto/auth.dto';
 
 @Controller('auth')
@@ -49,7 +50,9 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  async resetPassword(@Body() resetPasswordDTO: ResetPasswordDTO) {
+  async resetPassword(
+    @Body() resetPasswordDTO: ResetPasswordDTO,
+  ): Promise<ResetPasswordResponseDTO> {
     return {
       success: true,
       message: await this.authService.resetPassword(resetPasswordDTO),
