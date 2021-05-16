@@ -22,15 +22,11 @@ export class UsersService {
     private organizationsService: OrganizationsService,
   ) {}
 
-  async findUserById(id: string) {
-    return await this.userModel.findById(id);
-  }
-
-  async findUserByEmail(email: string, selectPassword = false) {
+  async findUser(user, selectPassword = false) {
     if (selectPassword) {
-      return await this.userModel.findOne({ email }).select('+password');
+      return await this.userModel.findOne(user).select('+password');
     }
-    return await this.userModel.findOne({ email });
+    return await this.userModel.findOne(user);
   }
 
   generateRandomPassword(): string {
@@ -38,7 +34,7 @@ export class UsersService {
   }
 
   async createUser({ name, email, password, role }): Promise<UserDocument> {
-    if (await this.findUserByEmail(email)) {
+    if (await this.findUser({ email })) {
       throw new HttpException(
         { success: false, error: 'user exists with the same email' },
         HttpStatus.BAD_REQUEST,

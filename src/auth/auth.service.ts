@@ -59,7 +59,7 @@ export class AuthService {
       const payload = { userId: newUser._id, email: newUser.email };
       const accessToken = this.jwtService.sign(payload);
       return {
-        user: await this.usersService.findUserByEmail(email),
+        user: await this.usersService.findUser({ email }),
         accessToken,
       };
     } catch (e) {
@@ -84,7 +84,7 @@ export class AuthService {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    const user = await this.usersService.findUserByEmail(email, true);
+    const user = await this.usersService.findUser({ email }, true);
 
     if (!user) {
       throw new HttpException(
@@ -100,7 +100,7 @@ export class AuthService {
         const accessToken = this.jwtService.sign(payload);
         var res = {
           accessToken,
-          user: await this.usersService.findUserByEmail(email),
+          user: await this.usersService.findUser({ email }),
         };
         if (user.role === 'organization-admin') {
           const organizations = await this.organizationsService.findOrganizationByAdmin(
@@ -123,7 +123,7 @@ export class AuthService {
 
   async requestPasswordReset(resetPasswordDTO: ResetPasswordDTO): Promise<any> {
     const { email } = resetPasswordDTO;
-    const user = await this.usersService.findUserByEmail(email);
+    const user = await this.usersService.findUser({ email });
     if (!user) {
       throw new HttpException(
         {
