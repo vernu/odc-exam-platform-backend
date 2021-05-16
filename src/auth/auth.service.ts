@@ -191,7 +191,7 @@ export class AuthService {
       .sort({
         createdAt: -1,
       })
-      .where({ user: user._id });
+      .where({ user: user._id, usedAt: null });
     console.log(passwordReset);
     if (!passwordReset) {
       throw new HttpException(
@@ -214,6 +214,7 @@ export class AuthService {
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await user.update({ password: hashedPassword });
+        await passwordReset.update({ usedAt: new Date() });
         return 'your password has been reset successfully';
       } else {
         throw new HttpException(

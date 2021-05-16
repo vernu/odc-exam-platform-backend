@@ -12,6 +12,8 @@ export class PasswordReset {
   secretCode: string;
   @Prop({ type: Date, required: true })
   expiresAt: Date;
+  @Prop({ type: Date })
+  usedAt: Date;
 }
 
 export const PasswordResetSchema = SchemaFactory.createForClass(PasswordReset);
