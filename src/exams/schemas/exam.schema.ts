@@ -14,7 +14,7 @@ export class Exam {
   description: string;
   @Prop({ type: Types.ObjectId, ref: Organization.name })
   organization: Organization;
-  @Prop({ type: [Types.ObjectId] })
+  @Prop({ type: [Types.ObjectId], ref: Question.name })
   questions: [Question];
   @Prop({ type: Types.ObjectId, ref: User.name })
   createdBy: User;

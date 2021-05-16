@@ -14,7 +14,10 @@ export class ExamsController {
   }
 
   @Get(':examId')
-  getASingleExam(@Param('examId') examId: string) {
-    return this.examsService.findExamById(examId);
+  async findExam(@Param('examId') examId: string) {
+    return {
+      success: true,
+      data: await this.examsService.findExam({ _id: examId }),
+    };
   }
 }
