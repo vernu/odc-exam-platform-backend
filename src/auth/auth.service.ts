@@ -152,7 +152,8 @@ export class AuthService {
 
     await passwordReset.save();
 
-    console.log(secretCode);
+    console.log(`secretCode: ${secretCode}`);
+    console.log(`resetToken: ${resetToken}`);
 
     this.mailService.sendEmail({
       to: user.email,
@@ -175,6 +176,15 @@ export class AuthService {
   async resetPassword(resetPasswordDTO: ResetPasswordDTO): Promise<any> {
     const { email, secretCode, resetToken, newPassword } = resetPasswordDTO;
 
+    if (!secretCode && !resetToken) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'secretCode or resetToken is required',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const user = await this.usersService.findUser({ email }, true);
     if (!user) {
       throw new HttpException(
@@ -186,54 +196,72 @@ export class AuthService {
       );
     }
 
-    const passwordReset = await this.passwordResetModel
-      .findOne()
-      .sort({
-        createdAt: -1,
-      })
-      .where({ user: user._id, usedAt: null });
-    console.log(passwordReset);
-    if (!passwordReset) {
+    if (!newPassword) {
       throw new HttpException(
         {
           success: false,
-          error: 'please request password reset first',
+          error: 'new password is required to continue',
         },
         HttpStatus.BAD_REQUEST,
       );
-    } else {
-      if (await bcrypt.compare(secretCode, passwordReset.secretCode)) {
-        if (!newPassword) {
+    }
+    var passwordReset = null;
+    if (secretCode) {
+      passwordReset = await this.passwordResetModel
+        .findOne()
+        .sort({
+          createdAt: -1,
+        })
+        .where({ user: user._id, usedAt: null });
+      console.log(passwordReset);
+      if (!passwordReset) {
+        throw new HttpException(
+          {
+            success: false,
+            error: 'please request password reset first',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      } else {
+        if (!(await bcrypt.compare(secretCode, passwordReset.secretCode))) {
           throw new HttpException(
             {
               success: false,
-              error: 'new password is required to continue',
+              error: 'invalid secret code',
             },
             HttpStatus.BAD_REQUEST,
           );
         }
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        await user.update({ password: hashedPassword });
-        await passwordReset.update({ usedAt: new Date() });
-        return 'your password has been reset successfully';
-      } else {
+      }
+    } else if (resetToken) {
+      const payload = await this.jwtService.verify(resetToken, {
+        ignoreExpiration: true,
+      });
+      console.log(payload);
+      passwordReset = await this.passwordResetModel
+        .findOne()
+        .sort({
+          createdAt: -1,
+        })
+        .where({
+          user: user._id,
+          secretCode: payload.secretCode,
+          usedAt: null,
+        });
+      if (!passwordReset) {
         throw new HttpException(
           {
             success: false,
-            error: 'invalid secret code',
+            error: 'invalid token, please request password reset again',
           },
           HttpStatus.BAD_REQUEST,
         );
       }
     }
-    if (!email) {
-      throw new HttpException(
-        {
-          success: false,
-          error: 'email cant be empty',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await user.updateOne({ password: hashedPassword });
+    await passwordReset.updateOne({ usedAt: new Date() });
+    return 'your password has been reset successfully';
   }
 }
