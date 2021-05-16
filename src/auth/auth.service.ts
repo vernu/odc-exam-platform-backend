@@ -132,11 +132,12 @@ export class AuthService {
     }
 
     const secretCode = this.getRandomInt(100000, 999000); // six digit random num
+    const hashedSecretCode = await bcrypt.hash(secretCode, 10);
 
     const payload = {
       userId: user._id,
       email: user.email,
-      secretCode,
+      secretCode: hashedSecretCode,
       pwResetToken: true,
     };
     const resetToken = this.jwtService.sign(payload, {
@@ -145,7 +146,7 @@ export class AuthService {
 
     const passwordReset = new this.passwordResetModel({
       user,
-      secretCode,
+      secretCode: hashedSecretCode,
       expiresAt: Date.now() + 1 / 24,
     });
 
