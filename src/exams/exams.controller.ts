@@ -2,13 +2,14 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateExamDTO, CreateExamResponseDTO } from './dto/exam.dto';
 import { ExamsService } from './exams.service';
+import { CanCreateOrganization } from './guards/can-create-exam.guard';
 
 @Controller('exams')
 export class ExamsController {
   constructor(private readonly examsService: ExamsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, CanCreateOrganization)
   async createExam(
     @Body() createExamDTO: CreateExamDTO,
   ): Promise<CreateExamResponseDTO> {
