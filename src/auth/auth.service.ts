@@ -131,7 +131,7 @@ export class AuthService {
       );
     }
 
-    const secretCode = this.getRandomInt(100000, 999000); // six digit random num
+    const secretCode = this.getRandomInt(100000, 999000).toString(); // six digit random num
     const hashedSecretCode = await bcrypt.hash(secretCode, 10);
 
     const payload = {
