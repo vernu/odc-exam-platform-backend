@@ -73,6 +73,4 @@ export class ExamsService {
       );
     }
   }
-
-  async findExamById(examId: string) {}
 }
