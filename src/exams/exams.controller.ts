@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateExamDTO } from './dto/exam.dto';
+import { CreateExamDTO, CreateExamResponseDTO } from './dto/exam.dto';
 import { ExamsService } from './exams.service';
 
 @Controller('exams')
@@ -9,7 +9,9 @@ export class ExamsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async createExam(@Body() createExamDTO: CreateExamDTO) {
+  async createExam(
+    @Body() createExamDTO: CreateExamDTO,
+  ): Promise<CreateExamResponseDTO> {
     return {
       success: true,
       message: 'exam has been created',
