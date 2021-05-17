@@ -6,6 +6,7 @@ import {
   InitialSuperAdminSetupDTO,
   LoginDTO,
   ResetPasswordDTO,
+  ValidatePasswordResetSecretCodeDTO,
 } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -171,6 +172,60 @@ export class AuthService {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  async validatePasswordResetSecretCode(
+    validatePasswordResetSecretCodeDTO: ValidatePasswordResetSecretCodeDTO,
+  ) {
+    const { email, secretCode } = validatePasswordResetSecretCodeDTO;
+
+    if (!secretCode) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'secretCode is missing',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const user = await this.usersService.findUser({ email }, true);
+    if (!user) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'user does not exist',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const passwordReset = await this.passwordResetModel
+      .findOne()
+      .sort({
+        createdAt: -1,
+      })
+      .where({ user: user._id, usedAt: null });
+    console.log(passwordReset);
+    if (!passwordReset) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'please request password reset first',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (!(await bcrypt.compare(secretCode, passwordReset.secretCode))) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'invalid secret code',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    } else {
+      return 'secret code is valid';
+    }
   }
 
   async resetPassword(resetPasswordDTO: ResetPasswordDTO): Promise<any> {

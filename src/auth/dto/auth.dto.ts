@@ -37,6 +37,16 @@ export class RequestPasswordResetResponseDTO {
   error?: string;
 }
 
+export class ValidatePasswordResetSecretCodeDTO {
+  email: string;
+  secretCode: string;
+}
+export class ValidatePasswordResetSecretCodeResponseDTO {
+  success: boolean;
+  error?: string;
+  message?: string;
+}
+
 export class ResetPasswordDTO {
   email: string;
   secretCode?: string;

@@ -9,6 +9,8 @@ import {
   RequestPasswordResetResponseDTO,
   ResetPasswordDTO,
   ResetPasswordResponseDTO,
+  ValidatePasswordResetSecretCodeDTO,
+  ValidatePasswordResetSecretCodeResponseDTO,
 } from './dto/auth.dto';
 
 @Controller('auth')
@@ -45,6 +47,18 @@ export class AuthController {
       success: true,
       message: await this.authService.requestPasswordReset(
         requestPasswordResetDTO,
+      ),
+    };
+  }
+
+  @Post('validate-password-reset-secret-code')
+  async vaidatePasswordResetSecretCode(
+    @Body() validatePasswordResetCodeDTO: ValidatePasswordResetSecretCodeDTO,
+  ): Promise<ValidatePasswordResetSecretCodeResponseDTO> {
+    return {
+      success: true,
+      message: await this.authService.validatePasswordResetSecretCode(
+        validatePasswordResetCodeDTO,
       ),
     };
   }
