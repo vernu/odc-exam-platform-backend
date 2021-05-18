@@ -34,14 +34,6 @@ export class ExamsService {
   ) {}
   async createExam(examData: CreateExamDTO) {
     var questions = [];
-    examData.questions.map((question) => {
-      const newQuestion = new this.questionModel({
-        type: question.type,
-        question: question.question,
-      });
-      newQuestion.save();
-      questions = [...questions, newQuestion];
-    });
     const organization = await this.organizationsService.findOrganizationById(
       examData.organizationId,
     );
@@ -58,11 +50,20 @@ export class ExamsService {
       organization,
       title: examData.title,
       description: examData.description,
-      questions,
+      // questions,
       createdBy: this.request.user,
     });
     try {
       await newExam.save();
+      examData.questions.map((question) => {
+        const newQuestion = new this.questionModel({
+          exam: newExam,
+          type: question.type,
+          question: question.question,
+        });
+        newQuestion.save();
+        questions = [...questions, newQuestion];
+      });
       return await this.findExam({ _id: newExam._id });
     } catch (e) {
       throw new HttpException(
@@ -77,9 +78,7 @@ export class ExamsService {
 
   async findExam(exam) {
     try {
-      const result = await this.examModel
-        .findOne(exam)
-        .populate(['questions', 'createdBy']);
+      const result = await this.examModel.findOne(exam).populate(['createdBy']);
       if (!result) {
         throw new HttpException(
           {
@@ -100,4 +99,6 @@ export class ExamsService {
       );
     }
   }
+
+  async getExamQuestions(examId: string) {}
 }

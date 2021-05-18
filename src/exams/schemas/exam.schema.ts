@@ -8,14 +8,15 @@ export type ExamDocument = Exam & Document;
 
 @Schema({ timestamps: true })
 export class Exam {
+  _id?: string;
   @Prop({ type: String, required: true })
   title: string;
   @Prop({ type: String })
   description: string;
   @Prop({ type: Types.ObjectId, ref: Organization.name })
   organization: Organization;
-  @Prop({ type: [Types.ObjectId], ref: Question.name })
-  questions: [Question];
+  // @Prop({ type: [Types.ObjectId], ref: Question.name })
+  // questions: [Question];
   @Prop({ type: Types.ObjectId, ref: User.name })
   createdBy: User;
 }
