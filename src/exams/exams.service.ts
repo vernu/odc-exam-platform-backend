@@ -101,4 +101,26 @@ export class ExamsService {
   }
 
   async getExamQuestions(examId: string) {}
+
+  async deleteExam(examId: string) {
+    const exam = await this.examModel.findById(examId);
+    if (!exam) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Exam not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    try {
+      await exam.deleteOne();
+      return 'exam deleted';
+    } catch (e) {
+      throw new HttpException(
+        { success: false, error: 'could not delete exam' },
+        500,
+      );
+    }
+  }
 }

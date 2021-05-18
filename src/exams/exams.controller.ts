@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateExamDTO, CreateExamResponseDTO } from './dto/exam.dto';
 import { ExamsService } from './exams.service';
@@ -33,6 +41,14 @@ export class ExamsController {
     return {
       success: true,
       data: await this.examsService.getExamQuestions(examId),
+    };
+  }
+
+  @Delete(':examId')
+  async deleteExam(@Param('examId') examId: string) {
+    return {
+      success: true,
+      message: await this.examsService.deleteExam(examId),
     };
   }
 }
