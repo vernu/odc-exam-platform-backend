@@ -8,7 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateExamDTO, CreateExamResponseDTO } from './dto/exam.dto';
+import {
+  CreateExamDTO,
+  CreateExamResponseDTO,
+  InviteExamineeDTO,
+} from './dto/exam.dto';
 import { ExamsService } from './exams.service';
 import { CanCreateOrganization } from './guards/can-create-exam.guard';
 
@@ -49,6 +53,20 @@ export class ExamsController {
     return {
       success: true,
       message: await this.examsService.deleteExam(examId),
+    };
+  }
+
+  @Post(':examId/invite-examinee')
+  async inviteExaminee(
+    @Param('examId') examId: string,
+    @Body() inviteExamineeDTO: InviteExamineeDTO,
+  ) {
+    return {
+      success: true,
+      message: await this.examsService.inviteExaminee(
+        examId,
+        inviteExamineeDTO,
+      ),
     };
   }
 }

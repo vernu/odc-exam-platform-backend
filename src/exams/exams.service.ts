@@ -9,16 +9,16 @@ import { REQUEST } from '@nestjs/core';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrganizationsService } from '../organizations/organizations.service';
-import {
-  Organization,
-  OrganizationDocument,
-} from '../organizations/schemas/organization.schema';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
-import { CreateExamDTO } from './dto/exam.dto';
+import { CreateExamDTO, InviteExamineeDTO } from './dto/exam.dto';
 import { Exam, ExamDocument } from './schemas/exam.schema';
 import { Question, QuestionDocument } from './schemas/question.schema';
 import { Request } from 'express';
+import {
+  ExamInvitation,
+  ExamInvitationDocument,
+} from './schemas/exam-invitation.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ExamsService {
@@ -29,8 +29,8 @@ export class ExamsService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Exam.name) private examModel: Model<ExamDocument>,
     @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
-    @InjectModel(Organization.name)
-    private organizationModel: Model<OrganizationDocument>,
+    @InjectModel(ExamInvitation.name)
+    private examInvitationModel: Model<ExamInvitationDocument>,
   ) {}
   async createExam(examData: CreateExamDTO) {
     var questions = [];
@@ -122,5 +122,39 @@ export class ExamsService {
         500,
       );
     }
+  }
+
+  async inviteExaminee(examId: string, examineeInfo: InviteExamineeDTO) {
+    const exam = await this.examModel.findById(examId);
+    if (!exam) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Exam not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    try {
+      const examInvitation = new this.examInvitationModel({
+        exam,
+        examineeName: examineeInfo.name,
+        examineeEmail: examineeInfo.email,
+        accessKey: this.getRandomInt(100000, 999999).toString(), //randm int between 100k - 999k
+      });
+      await examInvitation.save();
+      return 'Invitation has been sent';
+    } catch (e) {
+      throw new HttpException(
+        { success: false, error: 'could not delete exam' },
+        500,
+      );
+    }
+  }
+
+  getRandomInt(min: number, max: number): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }

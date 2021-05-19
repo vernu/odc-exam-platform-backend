@@ -14,3 +14,8 @@ export class CreateExamResponseDTO {
   message?: string;
   data?: ExamDocument;
 }
+
+export class InviteExamineeDTO {
+  name: string;
+  email: string;
+}

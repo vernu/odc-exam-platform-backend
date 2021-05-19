@@ -3,11 +3,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { TopicsModule } from '../topics/topics.module';
 import { UsersModule } from '../users/users.module';
-import { UsersService } from '../users/users.service';
 import { ExamsController } from './exams.controller';
 import { ExamsService } from './exams.service';
 import { Exam, ExamSchema } from './schemas/exam.schema';
 import { Question, QuestionSchema } from './schemas/question.schema';
+import {
+  ExamInvitation,
+  ExamInvitationSchema,
+} from './schemas/exam-invitation.schema';
 
 @Module({
   imports: [
@@ -25,6 +28,12 @@ import { Question, QuestionSchema } from './schemas/question.schema';
           schema.plugin(require('mongoose-slug-updater'));
           return schema;
         },
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: ExamInvitation.name,
+        schema: ExamInvitationSchema,
       },
     ]),
 
