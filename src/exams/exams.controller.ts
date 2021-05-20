@@ -42,9 +42,11 @@ export class ExamsController {
 
   @Get(':examId/questions')
   async getExamQuestions(@Param('examId') examId: string) {
+    const data = await this.examsService.getExamQuestions(examId);
     return {
       success: true,
-      data: await this.examsService.getExamQuestions(examId),
+      count: data.length,
+      data,
     };
   }
 
