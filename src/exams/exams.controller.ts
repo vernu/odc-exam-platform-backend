@@ -25,18 +25,20 @@ export class ExamsController {
   async createExam(
     @Body() createExamDTO: CreateExamDTO,
   ): Promise<CreateExamResponseDTO> {
+    const data = await this.examsService.createExam(createExamDTO);
     return {
       success: true,
       message: 'exam has been created',
-      data: await this.examsService.createExam(createExamDTO),
+      data,
     };
   }
 
   @Get(':examId')
   async findExam(@Param('examId') examId: string) {
+    const data = await this.examsService.findExam({ _id: examId });
     return {
       success: true,
-      data: await this.examsService.findExam({ _id: examId }),
+      data,
     };
   }
 
@@ -52,9 +54,10 @@ export class ExamsController {
 
   @Delete(':examId')
   async deleteExam(@Param('examId') examId: string) {
+    await this.examsService.deleteExam(examId);
     return {
       success: true,
-      message: await this.examsService.deleteExam(examId),
+      message: 'exam has been deleted',
     };
   }
 
@@ -63,20 +66,20 @@ export class ExamsController {
     @Param('examId') examId: string,
     @Body() inviteExamineeDTO: InviteExamineeDTO,
   ) {
+    await this.examsService.inviteExaminee(examId, inviteExamineeDTO);
     return {
       success: true,
-      message: await this.examsService.inviteExaminee(
-        examId,
-        inviteExamineeDTO,
-      ),
+      message: 'Invitation has been sent',
     };
   }
 
   @Get(':examId/invitations')
   async getInvitedExaminees(@Param('examId') examId: string) {
+    const data = await this.examsService.getInvitedExaminees(examId);
     return {
       success: true,
-      data: await this.examsService.getInvitedExaminees(examId),
+      count: data.length,
+      data,
     };
   }
 }

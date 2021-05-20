@@ -132,7 +132,6 @@ export class ExamsService {
     }
     try {
       await exam.deleteOne();
-      return 'exam deleted';
     } catch (e) {
       throw new HttpException(
         { success: false, error: 'could not delete exam' },
@@ -168,7 +167,6 @@ export class ExamsService {
         subject: 'Invitation for Exam',
         html: `Hi ${name},<br> You have been invited to ${exam.title}<br> Your access key is ${accessKey}`,
       });
-      return 'Invitation has been sent';
     } catch (e) {
       throw new HttpException(
         { success: false, error: 'invitation sending failed' },
