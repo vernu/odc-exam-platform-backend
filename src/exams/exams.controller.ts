@@ -69,4 +69,12 @@ export class ExamsController {
       ),
     };
   }
+
+  @Get(':examId/invitations')
+  async getInvitedExaminees(@Param('examId') examId: string) {
+    return {
+      success: true,
+      data: await this.examsService.getInvitedExaminees(examId),
+    };
+  }
 }
