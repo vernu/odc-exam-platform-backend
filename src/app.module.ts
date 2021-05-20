@@ -12,7 +12,13 @@ import { ExamsModule } from './exams/exams.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_URI, mongoDBConfig),
+    MongooseModule.forRoot(process.env.MONGO_URI, {
+      ...mongoDBConfig,
+      connectionFactory: (connection) => {
+        connection.plugin(require('mongoose-autopopulate'));
+        return connection;
+      },
+    }),
     AuthModule,
     UsersModule,
     TopicsModule,
