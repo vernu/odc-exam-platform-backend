@@ -11,6 +11,7 @@ import {
   ExamInvitation,
   ExamInvitationSchema,
 } from './schemas/exam-invitation.schema';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import {
     UsersModule,
     OrganizationsModule,
     TopicsModule,
+    MailModule,
   ],
   controllers: [ExamsController],
   providers: [ExamsService],

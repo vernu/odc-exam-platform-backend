@@ -19,6 +19,7 @@ import {
   ExamInvitation,
   ExamInvitationDocument,
 } from './schemas/exam-invitation.schema';
+import { MailService } from '../mail/mail.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ExamsService {
@@ -31,6 +32,7 @@ export class ExamsService {
     @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
     @InjectModel(ExamInvitation.name)
     private examInvitationModel: Model<ExamInvitationDocument>,
+    private mailService: MailService,
   ) {}
   async createExam(examData: CreateExamDTO) {
     var questions = [];
@@ -125,6 +127,8 @@ export class ExamsService {
   }
 
   async inviteExaminee(examId: string, examineeInfo: InviteExamineeDTO) {
+    const { name, email } = examineeInfo;
+
     const exam = await this.examModel.findById(examId);
     if (!exam) {
       throw new HttpException(
@@ -135,18 +139,24 @@ export class ExamsService {
         HttpStatus.NOT_FOUND,
       );
     }
+    const accessKey = this.getRandomInt(100000, 999999).toString(); //randm int between 100k - 999k
     try {
       const examInvitation = new this.examInvitationModel({
         exam,
-        examineeName: examineeInfo.name,
-        examineeEmail: examineeInfo.email,
-        accessKey: this.getRandomInt(100000, 999999).toString(), //randm int between 100k - 999k
+        examineeName: name,
+        examineeEmail: email,
+        accessKey,
       });
       await examInvitation.save();
+      this.mailService.sendEmail({
+        to: email,
+        subject: 'Invitation for Exam',
+        html: `Hi ${name},<br> You have been invited to ${exam.title}<br> Your access key is ${accessKey}`,
+      });
       return 'Invitation has been sent';
     } catch (e) {
       throw new HttpException(
-        { success: false, error: 'could not delete exam' },
+        { success: false, error: 'invitation sending failed' },
         500,
       );
     }
