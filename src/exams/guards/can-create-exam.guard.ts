@@ -8,7 +8,7 @@ import {
 import { OrganizationsService } from '../../organizations/organizations.service';
 
 @Injectable()
-export class CanCreateOrganization implements CanActivate {
+export class CanCreateExam implements CanActivate {
   constructor(private organizationsService: OrganizationsService) {}
 
   async canActivate(context: ExecutionContext) {
@@ -23,17 +23,19 @@ export class CanCreateOrganization implements CanActivate {
           request.body.organizationId,
         );
 
-        if (organization.admin._id == request.user._id.toString()) {
-          return true;
-        }
-        var isExaminer = false;
-        organization.examiners.map((examiner) => {
-          if (examiner._id == request.user._id.toString()) {
-            isExaminer = true;
-            return;
+        if (organization) {
+          if (organization.admin._id == request.user._id.toString()) {
+            return true;
           }
-        });
-        if (isExaminer) return true;
+          var isExaminer = false;
+          organization.examiners.map((examiner) => {
+            if (examiner._id == request.user._id.toString()) {
+              isExaminer = true;
+              return;
+            }
+          });
+          if (isExaminer) return true;
+        }
       }
     }
 
