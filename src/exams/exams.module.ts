@@ -5,13 +5,17 @@ import { TopicsModule } from '../topics/topics.module';
 import { UsersModule } from '../users/users.module';
 import { ExamsController } from './exams.controller';
 import { ExamsService } from './exams.service';
-import { Exam, ExamSchema, ExamContent, ExamContentSchema } from './schemas/exam.schema';
+import { Exam, ExamSchema } from './schemas/exam.schema';
 import { Question, QuestionSchema } from './schemas/question.schema';
 import {
   ExamInvitation,
   ExamInvitationSchema,
 } from './schemas/exam-invitation.schema';
 import { MailModule } from '../mail/mail.module';
+import {
+  ExamQuestion,
+  ExamQuestionSchema,
+} from './schemas/exam-question.schema';
 
 @Module({
   imports: [
@@ -23,8 +27,8 @@ import { MailModule } from '../mail/mail.module';
     ]),
     MongooseModule.forFeature([
       {
-        name: ExamContent.name,
-        schema: ExamContentSchema,
+        name: ExamQuestion.name,
+        schema: ExamQuestionSchema,
       },
     ]),
     MongooseModule.forFeatureAsync([

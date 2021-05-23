@@ -12,12 +12,7 @@ import { OrganizationsService } from '../organizations/organizations.service';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { CreateExamDTO, InviteExamineeDTO } from './dto/exam.dto';
-import {
-  Exam,
-  ExamContent,
-  ExamContentDocument,
-  ExamDocument,
-} from './schemas/exam.schema';
+import { Exam, ExamDocument } from './schemas/exam.schema';
 import { Question, QuestionDocument } from './schemas/question.schema';
 import { Request } from 'express';
 import {
@@ -25,6 +20,10 @@ import {
   ExamInvitationDocument,
 } from './schemas/exam-invitation.schema';
 import { MailService } from '../mail/mail.service';
+import {
+  ExamQuestionDocument,
+  ExamQuestion,
+} from './schemas/exam-question.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ExamsService {
@@ -34,8 +33,8 @@ export class ExamsService {
     private organizationsService: OrganizationsService,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Exam.name) private examModel: Model<ExamDocument>,
-    @InjectModel(ExamContent.name)
-    private examContentModel: Model<ExamContentDocument>,
+    @InjectModel('ExamQuestion')
+    private examQuestionModel: Model<ExamQuestionDocument>,
     @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
     @InjectModel(ExamInvitation.name)
     private examInvitationModel: Model<ExamInvitationDocument>,
@@ -43,7 +42,7 @@ export class ExamsService {
   ) {}
   async createExam(examData: CreateExamDTO) {
     const { organizationId, title, description } = examData;
-    var examContent: ExamContent[] = [];
+    var examQuestions: ExamQuestion[] = [];
 
     const organization = await this.organizationsService.findOrganizationById(
       organizationId,
@@ -76,25 +75,25 @@ export class ExamsService {
 
       newQuestion.save();
 
-      const newExamContent = new this.examContentModel({
+      const newExamQuestion = new this.examQuestionModel({
         question: newQuestion,
         points: content.points,
       });
 
-      //await newExamContent.save()
-      examContent = [...examContent, newExamContent];
+      newExamQuestion.save();
+      examQuestions = [...examQuestions, newExamQuestion];
     });
 
     const newExam = new this.examModel({
       organization,
       title,
       description,
-      content: examContent,
+      questions: examQuestions,
       createdBy: this.request.user,
     });
     try {
       await newExam.save();
-      return newExam;// await this.findExam({ _id: newExam._id });
+      return newExam; // await this.findExam({ _id: newExam._id });
     } catch (e) {
       throw new HttpException(
         {
