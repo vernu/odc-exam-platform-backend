@@ -9,12 +9,12 @@ export type QuestionDocument = Question & Document;
 @Schema({ timestamps: true })
 export class Question {
   _id?: string;
-  @Prop({ type: Types.ObjectId, ref: Exam.name })
-  exam: Exam;
+  // @Prop({ type: Types.ObjectId, ref: Exam.name })
+  // exam: Exam;
   @Prop({ type: String, required: true })
   type: string;
-  @Prop({ type: [Types.ObjectId], ref: Topic.name })
-  topics: [Topic];
+  @Prop({ type: [String] })
+  topics: [string];
   @Prop({ type: String, required: true })
   question: string;
   @Prop({ type: [String] })

@@ -12,7 +12,12 @@ import { OrganizationsService } from '../organizations/organizations.service';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { CreateExamDTO, InviteExamineeDTO } from './dto/exam.dto';
-import { Exam, ExamDocument } from './schemas/exam.schema';
+import {
+  Exam,
+  ExamContent,
+  ExamContentDocument,
+  ExamDocument,
+} from './schemas/exam.schema';
 import { Question, QuestionDocument } from './schemas/question.schema';
 import { Request } from 'express';
 import {
@@ -29,15 +34,19 @@ export class ExamsService {
     private organizationsService: OrganizationsService,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Exam.name) private examModel: Model<ExamDocument>,
+    @InjectModel(ExamContent.name)
+    private examContentModel: Model<ExamContentDocument>,
     @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
     @InjectModel(ExamInvitation.name)
     private examInvitationModel: Model<ExamInvitationDocument>,
     private mailService: MailService,
   ) {}
   async createExam(examData: CreateExamDTO) {
-    var questions = [];
+    const { organizationId, title, description } = examData;
+    var examContent: ExamContent[] = [];
+
     const organization = await this.organizationsService.findOrganizationById(
-      examData.organizationId,
+      organizationId,
     );
     if (!organization) {
       throw new HttpException(
@@ -48,25 +57,44 @@ export class ExamsService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    examData.questions.map((content) => {
+      const { type, question, correctAnswer } = content.question;
+
+      const topics = content.question.topics || [];
+      const answerOptions = content.question.answerOptions || [];
+      const answerKeywords = content.question.answerKeywords || [];
+
+      const newQuestion = new this.questionModel({
+        type,
+        question,
+        topics,
+        correctAnswer,
+        answerOptions,
+        answerKeywords,
+      });
+
+      newQuestion.save();
+
+      const newExamContent = new this.examContentModel({
+        question: newQuestion,
+        points: content.points,
+      });
+
+      //await newExamContent.save()
+      examContent = [...examContent, newExamContent];
+    });
+
     const newExam = new this.examModel({
       organization,
-      title: examData.title,
-      description: examData.description,
-      // questions,
+      title,
+      description,
+      content: examContent,
       createdBy: this.request.user,
     });
     try {
       await newExam.save();
-      examData.questions.map((question) => {
-        const newQuestion = new this.questionModel({
-          exam: newExam,
-          type: question.type,
-          question: question.question,
-        });
-        newQuestion.save();
-        questions = [...questions, newQuestion];
-      });
-      return await this.findExam({ _id: newExam._id });
+      return newExam;// await this.findExam({ _id: newExam._id });
     } catch (e) {
       throw new HttpException(
         {
@@ -80,7 +108,7 @@ export class ExamsService {
 
   async findExam(exam) {
     try {
-      const result = await this.examModel.findOne(exam).populate(['createdBy']);
+      const result = await this.examModel.findOne(exam).populate([]);
       if (!result) {
         throw new HttpException(
           {

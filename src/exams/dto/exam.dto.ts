@@ -1,11 +1,11 @@
-import { ExamDocument } from '../schemas/exam.schema';
+import { ExamContentDocument, ExamDocument } from '../schemas/exam.schema';
 import { Question } from '../schemas/question.schema';
 
 export class CreateExamDTO {
   organizationId: string;
   title: string;
   description: string;
-  questions: [Question];
+  questions: [ExamContentDocument];
 }
 
 export class CreateExamResponseDTO {
