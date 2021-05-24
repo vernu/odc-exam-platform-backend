@@ -20,9 +20,7 @@ export class Question {
   @Prop({ type: [String] })
   answerOptions: [string];
   @Prop({ type: String })
-  correctAnswer: string;
-  @Prop({ type: [String] })
-  answerKeywords: [string];
+  correctAnswers: [string];
   @Prop({ type: Types.ObjectId, ref: User.name })
   createdBy: User;
 }
