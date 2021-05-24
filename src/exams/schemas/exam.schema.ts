@@ -14,7 +14,7 @@ export class Exam {
   @Prop({ type: String })
   description: string;
   @Prop({ type: Number })
-  timeAllowed: number; //in seconds
+  timeAllowed: number; //in minute
   @Prop({ type: Types.ObjectId, ref: Organization.name })
   organization: Organization;
   @Prop({ type: [ExamQuestionSchema], ref: ExamQuestion.name })
