@@ -7,6 +7,8 @@ export type ExamQuestionDocument = ExamQuestion & Document;
 export class ExamQuestion {
   @Prop({ type: Types.ObjectId, ref: 'Question' })
   question: Question;
+  @Prop({ type: Number, required: true, default: 0 })
+  questionNumber: number;
   @Prop({ type: Number })
   points: number;
 }
