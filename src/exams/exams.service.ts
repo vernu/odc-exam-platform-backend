@@ -130,11 +130,19 @@ export class ExamsService {
   }
 
   async findExamsForOrganization(organizationId) {
-    try {
-      const organization = await this.organizationsService.findOrganizationById(
-        organizationId,
+    const organization = await this.organizationsService.findOrganizationById(
+      organizationId,
+    );
+    if (!organization) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'organization not found',
+        },
+        HttpStatus.NOT_FOUND,
       );
-      // return organization;
+    }
+    try {
       const result = await this.examModel.find({
         organization: organization._id,
       });
