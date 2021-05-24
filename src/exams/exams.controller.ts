@@ -56,6 +56,19 @@ export class ExamsController {
     };
   }
 
+  @Get('by-organization/:organizationId')
+  async findExamsForOrganizationAlternative(
+    @Param('organizationId') organizationId: string,
+  ) {
+    const data = await this.examsService.findExamsForOrganization(
+      organizationId,
+    );
+    return {
+      success: true,
+      data,
+    };
+  }
+
   @Get(':examId/questions')
   async getExamQuestions(@Param('examId') examId: string) {
     const data = await this.examsService.getExamQuestions(examId);
