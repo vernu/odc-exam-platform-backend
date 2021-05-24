@@ -9,7 +9,7 @@ export class ExamQuestion {
   question: Question;
   @Prop({ type: Number, required: true, default: 0 })
   questionNumber: number;
-  @Prop({ type: Number })
+  @Prop({ type: Number, default: 1 })
   points: number;
 }
 export const ExamQuestionSchema = SchemaFactory.createForClass(ExamQuestion);
