@@ -13,6 +13,8 @@ export class Exam {
   title: string;
   @Prop({ type: String })
   description: string;
+  @Prop({ type: Number })
+  timeAllowed: number;
   @Prop({ type: Types.ObjectId, ref: Organization.name })
   organization: Organization;
   @Prop({ type: [ExamQuestionSchema], ref: ExamQuestion.name })
