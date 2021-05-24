@@ -129,6 +129,36 @@ export class ExamsService {
     }
   }
 
+  async findExamsForOrganization(organizationId) {
+    try {
+      const organization = await this.organizationsService.findOrganizationById(
+        organizationId,
+      );
+      // return organization;
+      const result = await this.examModel.find({
+        organization: organization._id,
+      });
+      if (!result) {
+        throw new HttpException(
+          {
+            success: false,
+            error: 'exams not found',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return result;
+    } catch (e) {
+      throw new HttpException(
+        {
+          success: false,
+          error: `could not find exams : ${e.toString()}`,
+        },
+        500,
+      );
+    }
+  }
+
   async getExamQuestions(examId: string) {
     const exam = await this.examModel.findById(examId);
     if (!exam) {

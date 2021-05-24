@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Query,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -36,6 +37,19 @@ export class ExamsController {
   @Get(':examId')
   async findExam(@Param('examId') examId: string) {
     const data = await this.examsService.findExam({ _id: examId });
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @Get('')
+  async findExamsForOrganization(
+    @Query('organizationId') organizationId: string,
+  ) {
+    const data = await this.examsService.findExamsForOrganization(
+      organizationId,
+    );
     return {
       success: true,
       data,
