@@ -41,7 +41,7 @@ export class ExamsService {
     private mailService: MailService,
   ) {}
   async createExam(examData: CreateExamDTO) {
-    const { organizationId, title, description } = examData;
+    const { organizationId, title, description, timeAllowed } = examData;
     var examQuestions: ExamQuestion[] = [];
 
     const organization = await this.organizationsService.findOrganizationById(
@@ -58,19 +58,18 @@ export class ExamsService {
     }
 
     examData.questions.map((content) => {
-      const { type, question, correctAnswer } = content.question;
+      const { type, question } = content.question;
 
       const topics = content.question.topics || [];
       const answerOptions = content.question.answerOptions || [];
-      const answerKeywords = content.question.answerKeywords || [];
+      const correctAnswers = content.question.correctAnswers || [];
 
       const newQuestion = new this.questionModel({
         type,
         question,
         topics,
-        correctAnswer,
+        correctAnswers,
         answerOptions,
-        answerKeywords,
       });
 
       newQuestion.save();
@@ -88,6 +87,7 @@ export class ExamsService {
       organization,
       title,
       description,
+      timeAllowed,
       questions: examQuestions,
       createdBy: this.request.user,
     });

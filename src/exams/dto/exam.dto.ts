@@ -6,6 +6,7 @@ export class CreateExamDTO {
   organizationId: string;
   title: string;
   description: string;
+  timeAllowed: number;
   questions: [ExamQuestionDocument];
 }
 

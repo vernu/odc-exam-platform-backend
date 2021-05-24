@@ -19,7 +19,7 @@ export class Question {
   question: string;
   @Prop({ type: [String] })
   answerOptions: [string];
-  @Prop({ type: String })
+  @Prop({ type: [String] })
   correctAnswers: [string];
   @Prop({ type: Types.ObjectId, ref: User.name })
   createdBy: User;
