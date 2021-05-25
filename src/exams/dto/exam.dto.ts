@@ -17,7 +17,6 @@ export class CreateExamResponseDTO {
   data?: ExamDocument;
 }
 
-export class InviteExamineeDTO {
-  name: string;
-  email: string;
+export class InviteExamineesDTO {
+  examinees: [{ name: string; email: string }];
 }

@@ -11,7 +11,7 @@ import { Model } from 'mongoose';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
-import { CreateExamDTO, InviteExamineeDTO } from './dto/exam.dto';
+import { CreateExamDTO, InviteExamineesDTO } from './dto/exam.dto';
 import { Exam, ExamDocument } from './schemas/exam.schema';
 import { Question, QuestionDocument } from './schemas/question.schema';
 import { Request } from 'express';
@@ -205,9 +205,7 @@ export class ExamsService {
     }
   }
 
-  async inviteExaminee(examId: string, examineeInfo: InviteExamineeDTO) {
-    const { name, email } = examineeInfo;
-
+  async inviteExaminees(examId: string, examineesInfo: InviteExamineesDTO) {
     const exam = await this.examModel.findById(examId);
     if (!exam) {
       throw new HttpException(
@@ -218,26 +216,30 @@ export class ExamsService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const accessKey = this.getRandomInt(100000, 999999).toString(); //randm int between 100k - 999k
-    try {
-      const examInvitation = new this.examInvitationModel({
-        exam,
-        examineeName: name,
-        examineeEmail: email,
-        accessKey,
-      });
-      await examInvitation.save();
-      this.mailService.sendEmail({
-        to: email,
-        subject: 'Invitation for Exam',
-        html: `Hi ${name},<br> You have been invited to ${exam.title}<br> Your access key is ${accessKey}`,
-      });
-    } catch (e) {
-      throw new HttpException(
-        { success: false, error: 'invitation sending failed' },
-        500,
-      );
-    }
+
+    examineesInfo.examinees.forEach(async (examinee) => {
+      const { name, email } = examinee;
+      const accessKey = this.getRandomInt(100000, 999999).toString(); //randm int between 100k - 999k
+      try {
+        const examInvitation = new this.examInvitationModel({
+          exam,
+          examineeName: name,
+          examineeEmail: email,
+          accessKey,
+        });
+        await examInvitation.save();
+        this.mailService.sendEmail({
+          to: email,
+          subject: 'Invitation for Exam',
+          html: `Hi ${name},<br> You have been invited to ${exam.title}<br> Your access key is ${accessKey}`,
+        });
+      } catch (e) {
+        throw new HttpException(
+          { success: false, error: 'invitation sending failed' },
+          500,
+        );
+      }
+    });
   }
 
   async getInvitedExaminees(examId: string) {

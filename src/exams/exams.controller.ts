@@ -12,7 +12,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   CreateExamDTO,
   CreateExamResponseDTO,
-  InviteExamineeDTO,
+  InviteExamineesDTO,
 } from './dto/exam.dto';
 import { ExamsService } from './exams.service';
 import { CanCreateExam } from './guards/can-create-exam.guard';
@@ -88,12 +88,12 @@ export class ExamsController {
     };
   }
 
-  @Post(':examId/invite-examinee')
-  async inviteExaminee(
+  @Post(':examId/invite-examinees')
+  async inviteExaminees(
     @Param('examId') examId: string,
-    @Body() inviteExamineeDTO: InviteExamineeDTO,
+    @Body() inviteExamineesDTO: InviteExamineesDTO,
   ) {
-    await this.examsService.inviteExaminee(examId, inviteExamineeDTO);
+    await this.examsService.inviteExaminees(examId, inviteExamineesDTO);
     return {
       success: true,
       message: 'Invitation has been sent',
