@@ -220,6 +220,7 @@ export class ExamsService {
     examineesInfo.examinees.forEach(async (examinee) => {
       const { name, email } = examinee;
       const accessKey = this.getRandomInt(100000, 999999).toString(); //randm int between 100k - 999k
+      console.log(accessKey);
       try {
         const examInvitation = new this.examInvitationModel({
           exam,
@@ -257,6 +258,25 @@ export class ExamsService {
       exam: exam._id,
     });
     return invitees;
+  }
+
+  async startExam({ examId, examineeEmail, accessKey }) {
+    const examInvitation = await this.examInvitationModel.findOne({
+      examineeEmail,
+      accessKey,
+    });
+    if (!examInvitation) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    // console.log(examInvitation);
+    // await this.examInvitationModel.updateOne({ startedAt: Date.now() });
+    return await this.findExam({ _id: examInvitation.exam._id });
   }
 
   getRandomInt(min: number, max: number): number {

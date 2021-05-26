@@ -20,3 +20,8 @@ export class CreateExamResponseDTO {
 export class InviteExamineesDTO {
   examinees: [{ name: string; email: string }];
 }
+
+export class StartExamDTO {
+  examineeEmail: string;
+  accessKey: string;
+}

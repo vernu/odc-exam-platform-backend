@@ -13,6 +13,7 @@ import {
   CreateExamDTO,
   CreateExamResponseDTO,
   InviteExamineesDTO,
+  StartExamDTO,
 } from './dto/exam.dto';
 import { ExamsService } from './exams.service';
 import { CanCreateExam } from './guards/can-create-exam.guard';
@@ -106,6 +107,24 @@ export class ExamsController {
     return {
       success: true,
       count: data.length,
+      data,
+    };
+  }
+
+  @Post(':examId/start')
+  async startExam(
+    @Param('examId') examId: string,
+    @Body() startExamDTO: StartExamDTO,
+  ) {
+    const { examineeEmail, accessKey } = startExamDTO;
+    const data = await this.examsService.startExam({
+      examId,
+      examineeEmail,
+      accessKey,
+    });
+    return {
+      success: true,
+      message: 'exam started',
       data,
     };
   }
