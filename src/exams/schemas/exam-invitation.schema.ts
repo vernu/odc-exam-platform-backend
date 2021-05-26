@@ -16,6 +16,10 @@ export class ExamInvitation {
   examineeEmail: string;
   @Prop({ type: String, required: true })
   accessKey: string;
+  @Prop({ type: Date })
+  startedAt: Date;
+  @Prop({ type: Date })
+  finishedAt: Date;
 }
 
 export const ExamInvitationSchema = SchemaFactory.createForClass(
