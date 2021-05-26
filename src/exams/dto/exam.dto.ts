@@ -25,3 +25,14 @@ export class StartExamDTO {
   examineeEmail: string;
   accessKey: string;
 }
+
+export class SubmitAnswersDTO {
+  examineeEmail: string;
+  accessKey: string;
+  answers: [
+    {
+      examQuestionId: string;
+      answers: [string];
+    },
+  ];
+}

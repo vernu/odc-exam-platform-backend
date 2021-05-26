@@ -24,6 +24,10 @@ import {
   ExamQuestionDocument,
   ExamQuestion,
 } from './schemas/exam-question.schema';
+import {
+  ExamineeAnswer,
+  ExamineeAnswerDocument,
+} from './schemas/examinee-answer.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ExamsService {
@@ -38,6 +42,8 @@ export class ExamsService {
     @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
     @InjectModel(ExamInvitation.name)
     private examInvitationModel: Model<ExamInvitationDocument>,
+    @InjectModel(ExamineeAnswer.name)
+    private examineeAnswerModel: Model<ExamineeAnswerDocument>,
     private mailService: MailService,
   ) {}
   async createExam(examData: CreateExamDTO) {
@@ -276,6 +282,40 @@ export class ExamsService {
     }
     // console.log(examInvitation);
     await this.examInvitationModel.updateOne({ startedAt: new Date() });
+    return await this.findExam({ _id: examInvitation.exam._id });
+  }
+
+  async submitAnswers({ examId, examineeEmail, accessKey, answers }) {
+    const examInvitation = await this.examInvitationModel.findOne({
+      examineeEmail,
+      accessKey,
+    });
+    if (!examInvitation) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    // console.log(examInvitation);
+    await this.examInvitationModel.updateOne({ finishedAt: new Date() });
+
+    answers.map(async (answer) => {
+      const examQuestion = await this.examQuestionModel.findOne({
+        _id: answer.examQuestionId,
+      });
+      if (examQuestion) {
+        const examineeAnswer = new this.examineeAnswerModel({
+          examQuestion,
+          examineeAnswers: answer.answers,
+        });
+        console.log(examineeAnswer);
+        await examineeAnswer.save();
+      }
+    });
+
     return await this.findExam({ _id: examInvitation.exam._id });
   }
 

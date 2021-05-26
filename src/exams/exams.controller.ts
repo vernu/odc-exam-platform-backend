@@ -14,6 +14,7 @@ import {
   CreateExamResponseDTO,
   InviteExamineesDTO,
   StartExamDTO,
+  SubmitAnswersDTO,
 } from './dto/exam.dto';
 import { ExamsService } from './exams.service';
 import { CanCreateExam } from './guards/can-create-exam.guard';
@@ -126,6 +127,24 @@ export class ExamsController {
       success: true,
       message: 'exam started',
       data,
+    };
+  }
+
+  @Post(':examId/submit-answers')
+  async submitAnswers(
+    @Param('examId') examId: string,
+    @Body() submitAnswersDTO: SubmitAnswersDTO,
+  ) {
+    const { examineeEmail, accessKey, answers } = submitAnswersDTO;
+    await this.examsService.submitAnswers({
+      examId,
+      examineeEmail,
+      accessKey,
+      answers,
+    });
+    return {
+      success: true,
+      message: 'answers submitted',
     };
   }
 }

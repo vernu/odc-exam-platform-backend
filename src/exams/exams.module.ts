@@ -16,6 +16,10 @@ import {
   ExamQuestion,
   ExamQuestionSchema,
 } from './schemas/exam-question.schema';
+import {
+  ExamineeAnswer,
+  ExamineeAnswerSchema,
+} from './schemas/examinee-answer.schema';
 
 @Module({
   imports: [
@@ -45,6 +49,13 @@ import {
       {
         name: ExamInvitation.name,
         schema: ExamInvitationSchema,
+      },
+    ]),
+
+    MongooseModule.forFeature([
+      {
+        name: ExamineeAnswer.name,
+        schema: ExamineeAnswerSchema,
       },
     ]),
 
