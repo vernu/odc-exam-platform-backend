@@ -275,7 +275,7 @@ export class ExamsService {
       );
     }
     // console.log(examInvitation);
-    // await this.examInvitationModel.updateOne({ startedAt: Date.now() });
+    await this.examInvitationModel.updateOne({ startedAt: new Date() });
     return await this.findExam({ _id: examInvitation.exam._id });
   }
 
