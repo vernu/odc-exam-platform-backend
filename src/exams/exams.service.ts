@@ -50,9 +50,9 @@ export class ExamsService {
     const { organizationId, title, description, timeAllowed } = examData;
     var examQuestions: ExamQuestion[] = [];
 
-    const organization = await this.organizationsService.findOrganizationById(
-      organizationId,
-    );
+    const organization = await this.organizationsService.findAnOrganization({
+      _id: organizationId,
+    });
     if (!organization) {
       throw new HttpException(
         {
@@ -136,9 +136,9 @@ export class ExamsService {
   }
 
   async findExamsForOrganization(organizationId) {
-    const organization = await this.organizationsService.findOrganizationById(
-      organizationId,
-    );
+    const organization = await this.organizationsService.findAnOrganization({
+      _id: organizationId,
+    });
     if (!organization) {
       throw new HttpException(
         {

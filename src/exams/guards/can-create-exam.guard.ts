@@ -19,8 +19,8 @@ export class CanCreateExam implements CanActivate {
         return true;
       } else {
         //check if the user is the organization's admin or examiner
-        const organization = await this.organizationsService.findOrganizationById(
-          request.body.organizationId,
+        const organization = await this.organizationsService.findAnOrganization(
+          { _id: request.body.organizationId },
         );
 
         if (organization) {

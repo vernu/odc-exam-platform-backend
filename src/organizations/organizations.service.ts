@@ -30,23 +30,31 @@ export class OrganizationsService {
     private organizationModel: Model<OrganizationDocument>,
   ) {}
 
-  async findOrganizationById(id: string) {
-    try {
-      const organization = await this.organizationModel
-        .findById(id)
-        .populate(['admin', 'examiners']);
-      return organization;
-    } catch (e) {
-      throw new HttpException(
-        { success: false, error: 'failed to get organization' },
-        500,
-      );
-    }
+  async findAnOrganization(org) {
+    return await this.organizationModel.findOne(org);
   }
 
-  async findOrganizationByAdmin(userId: string) {
-    return await this.organizationModel.find().where({ admin: userId });
+  async findOrganizations(org) {
+    return await this.organizationModel.find(org);
   }
+
+  // async findOrganizationById(id: string) {
+  //   try {
+  //     const organization = await this.organizationModel
+  //       .findById(id)
+  //       .populate(['admin', 'examiners']);
+  //     return organization;
+  //   } catch (e) {
+  //     throw new HttpException(
+  //       { success: false, error: 'failed to get organization' },
+  //       500,
+  //     );
+  //   }
+  // }
+
+  // async findOrganizationByAdmin(userId: string) {
+  //   return await this.organizationModel.find().where({ admin: userId });
+  // }
 
   async getOrganizations(): Promise<any> {
     try {

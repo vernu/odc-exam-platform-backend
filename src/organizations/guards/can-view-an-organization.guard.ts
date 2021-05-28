@@ -19,8 +19,8 @@ export class CanViewAnOrganization implements CanActivate {
         return true;
       } else {
         //check if the user is the organization's admin or examiner
-        const organization = await this.organizationsService.findOrganizationById(
-          request.params.organizationId,
+        const organization = await this.organizationsService.findAnOrganization(
+          { _id: request.params.organizationId },
         );
 
         if (organization.admin._id == request.user._id.toString()) {

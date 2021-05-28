@@ -100,8 +100,8 @@ export class AuthService {
           user: await this.usersService.findUser({ email }),
         };
         if (user.role === 'organization-admin') {
-          const organizations = await this.organizationsService.findOrganizationByAdmin(
-            user._id,
+          const organizations = await this.organizationsService.findOrganizations(
+            { admin: user._id },
           );
           return { ...res, organizations };
         }
