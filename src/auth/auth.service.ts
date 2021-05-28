@@ -99,9 +99,11 @@ export class AuthService {
           accessToken,
           user: await this.usersService.findUser({ email }),
         };
-        if (user.role === 'organization-admin') {
+
+        //if user's role is organization-admin or examiner include list of organizations associated with the user in the response
+        if (['organization-admin', 'examiner'].includes(user.role)) {
           const organizations = await this.organizationsService.findOrganizations(
-            { admin: user._id },
+            { $or: [{ examiners: user._id }, { admin: user._id }] },
           );
           return { ...res, organizations };
         }
