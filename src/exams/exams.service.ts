@@ -313,7 +313,7 @@ export class ExamsService {
       );
     }
 
-    await this.examInvitationModel.updateOne({ startedAt: new Date() });
+    await examInvitation.updateOne({ startedAt: new Date() });
     return await this.findExam({ _id: examInvitation.exam._id });
   }
 
@@ -343,7 +343,7 @@ export class ExamsService {
     }
 
     // console.log(examInvitation);
-    await this.examInvitationModel.updateOne({ finishedAt: new Date() });
+    await examInvitation.updateOne({ finishedAt: new Date() });
 
     answers.map(async (answer) => {
       const examQuestion = await this.examQuestionModel.findOne({
