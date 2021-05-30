@@ -346,9 +346,11 @@ export class ExamsService {
     await examInvitation.updateOne({ finishedAt: new Date() });
 
     answers.map(async (answer) => {
-      const examQuestion = await this.examQuestionModel.findOne({
-        _id: answer.examQuestionId,
-      });
+      const examQuestion = await this.examQuestionModel
+        .findOne({
+          _id: answer.examQuestionId,
+        })
+        .populate(['question']);
       if (examQuestion) {
         const examineeAnswer = new this.examineeAnswerModel({
           examInvitation,
@@ -356,10 +358,37 @@ export class ExamsService {
           examineeAnswers: answer.answers,
         });
         await examineeAnswer.save();
+        this.gradeExamineeAnswer(examineeAnswer, examQuestion);
       }
     });
 
     return await this.findExam({ _id: examInvitation.exam._id });
+  }
+
+  async gradeExamineeAnswer(
+    examineeAnswer: ExamineeAnswerDocument,
+    examQuestion: ExamQuestionDocument,
+  ) {
+    var isCorrect = false;
+    switch (examQuestion.question.type) {
+      case 'choice':
+        if (examineeAnswer.examineeAnswers.length == 1) {
+          isCorrect = examQuestion.question.correctAnswers.includes(
+            examineeAnswer.examineeAnswers[0],
+          );
+        }
+        break;
+      case 'checkbox':
+        break;
+      case 'short-answer':
+        break;
+      default:
+        break;
+    }
+
+    if (isCorrect) {
+      await examineeAnswer.updateOne({ pointsGained: examQuestion.points });
+    }
   }
 
   getRandomInt(min: number, max: number): number {
