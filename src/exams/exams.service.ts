@@ -111,9 +111,12 @@ export class ExamsService {
     }
   }
 
-  async findExam(exam) {
+  async findExam(exam, hideAnswers = true) {
     try {
-      const result = await this.examModel.findOne(exam).populate([]);
+      const result = await this.examModel
+        .findOne(exam)
+        .select([hideAnswers && '-questions.question.correctAnswers'])
+        .populate([]);
       if (!result) {
         throw new HttpException(
           {
@@ -291,7 +294,7 @@ export class ExamsService {
         HttpStatus.NOT_FOUND,
       );
     }
-    
+
     if (examInvitation.finishedAt) {
       throw new HttpException(
         {
