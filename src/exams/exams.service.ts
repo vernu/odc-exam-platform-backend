@@ -291,7 +291,25 @@ export class ExamsService {
         HttpStatus.NOT_FOUND,
       );
     }
-    // console.log(examInvitation);
+    
+    if (examInvitation.finishedAt) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Answers already submitted',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    } else if (examInvitation.startedAt) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Exam already started',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     await this.examInvitationModel.updateOne({ startedAt: new Date() });
     return await this.findExam({ _id: examInvitation.exam._id });
   }
@@ -333,7 +351,6 @@ export class ExamsService {
           examQuestion,
           examineeAnswers: answer.answers,
         });
-        console.log(examineeAnswer);
         await examineeAnswer.save();
       }
     });
