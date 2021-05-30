@@ -232,8 +232,8 @@ export class ExamsService {
       });
 
       if (invited) {
-        console.log(`${email} already invited`)
-        return
+        console.log(`${email} already invited`);
+        return;
       }
 
       const accessKey = this.getRandomInt(100000, 999999).toString(); //randm int between 100k - 999k
@@ -310,6 +310,17 @@ export class ExamsService {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    if (examInvitation.finishedAt) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Answers already submitted',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     // console.log(examInvitation);
     await this.examInvitationModel.updateOne({ finishedAt: new Date() });
 
