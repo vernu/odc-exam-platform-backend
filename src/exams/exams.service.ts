@@ -351,6 +351,7 @@ export class ExamsService {
       });
       if (examQuestion) {
         const examineeAnswer = new this.examineeAnswerModel({
+          examInvitation,
           examQuestion,
           examineeAnswers: answer.answers,
         });
