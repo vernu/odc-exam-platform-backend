@@ -225,6 +225,17 @@ export class ExamsService {
 
     examineesInfo.examinees.forEach(async (examinee) => {
       const { name, email } = examinee;
+
+      const invited = await this.examInvitationModel.findOne({
+        exam: exam._id,
+        examineeEmail: email,
+      });
+
+      if (invited) {
+        console.log(`${email} already invited`)
+        return
+      }
+
       const accessKey = this.getRandomInt(100000, 999999).toString(); //randm int between 100k - 999k
       console.log(accessKey);
       try {
