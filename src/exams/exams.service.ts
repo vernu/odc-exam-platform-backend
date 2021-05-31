@@ -371,16 +371,18 @@ export class ExamsService {
   ) {
     var isCorrect = false;
     switch (examQuestion.question.type) {
-      case 'choice':
+      case 'multipleChoice':
         if (examineeAnswer.examineeAnswers.length == 1) {
           isCorrect = examQuestion.question.correctAnswers.includes(
             examineeAnswer.examineeAnswers[0],
           );
         }
         break;
-      case 'checkbox':
+      case 'checkBox':
         break;
-      case 'short-answer':
+      case 'shortAnswer':
+        break;
+      case 'paragraph':
         break;
       default:
         break;
