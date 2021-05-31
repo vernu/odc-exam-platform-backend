@@ -31,11 +31,15 @@ export class OrganizationsService {
   ) {}
 
   async findAnOrganization(org) {
-    return await this.organizationModel.findOne(org);
+    return await this.organizationModel
+      .findOne(org)
+      .populate(['admin', 'examiners']);
   }
 
   async findOrganizations(org) {
-    return await this.organizationModel.find(org);
+    return await this.organizationModel
+      .find(org)
+      .populate(['admin', 'examiners']);
   }
 
   // async findOrganizationById(id: string) {
