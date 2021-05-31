@@ -332,15 +332,15 @@ export class ExamsService {
       );
     }
 
-    if (examInvitation.finishedAt) {
-      throw new HttpException(
-        {
-          success: false,
-          error: 'Answers already submitted',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // if (examInvitation.finishedAt) {
+    //   throw new HttpException(
+    //     {
+    //       success: false,
+    //       error: 'Answers already submitted',
+    //     },
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
 
     // console.log(examInvitation);
     await examInvitation.updateOne({ finishedAt: new Date() });
