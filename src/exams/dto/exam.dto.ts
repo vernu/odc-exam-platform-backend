@@ -36,6 +36,10 @@ export class InviteExamineesDTO {
   examinees: [{ name: string; email: string }];
 }
 
+export class CancelExamInvitationsDTO {
+  examinees: [email: string];
+}
+
 export class StartExamDTO {
   examineeEmail: string;
   accessKey: string;

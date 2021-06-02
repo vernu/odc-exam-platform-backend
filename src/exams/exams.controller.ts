@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
+  CancelExamInvitationsDTO,
   CreateExamDTO,
   CreateExamResponseDTO,
   InviteExamineesDTO,
@@ -115,6 +116,21 @@ export class ExamsController {
       message: 'Invitation has been sent',
     };
   }
+
+
+  @Post(':examId/cancel-invitations')
+  async cancelExamInvitations(
+    @Param('examId') examId: string,
+    @Body() cancelExamInvitationsDTO: CancelExamInvitationsDTO,
+  ) {
+    await this.examsService.cancelExamInvitations(examId, cancelExamInvitationsDTO);
+    return {
+      success: true,
+      message: 'Invitations have been canceled',
+    };
+  }
+
+  
 
   @Get(':examId/invitations')
   async getInvitedExaminees(@Param('examId') examId: string) {

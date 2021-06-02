@@ -12,6 +12,7 @@ import { OrganizationsService } from '../organizations/organizations.service';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import {
+  CancelExamInvitationsDTO,
   CreateExamDTO,
   InviteExamineesDTO,
   UpdateExamDTO,
@@ -296,6 +297,36 @@ export class ExamsService {
           500,
         );
       }
+    });
+  }
+
+  async cancelExamInvitations(
+    examId: string,
+    examineesInfo: CancelExamInvitationsDTO,
+  ) {
+    const exam = await this.examModel.findById(examId);
+    if (!exam) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Exam not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    examineesInfo.examinees.forEach(async (examineeEmail) => {
+      const examInvitation = await this.examInvitationModel.findOne({
+        exam: exam._id,
+        examineeEmail,
+      });
+
+      if (!examInvitation) {
+        console.log(`${examineeEmail} not invited`);
+        return;
+      }
+
+      await examInvitation.deleteOne();
     });
   }
 
