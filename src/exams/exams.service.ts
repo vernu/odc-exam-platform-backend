@@ -448,8 +448,35 @@ export class ExamsService {
         }
         break;
       case 'checkBox':
+        if (
+          examQuestion.question.correctAnswers.length !=
+          examineeAnswer.examineeAnswers.length
+        ) {
+          //wrong ans
+        } else {
+          var correctSelections = 0;
+          examineeAnswer.examineeAnswers.map((examineeAnswer) => {
+            if (examQuestion.question.correctAnswers.includes(examineeAnswer)) {
+              correctSelections++;
+            }
+          });
+
+          if (
+            correctSelections == examQuestion.question.correctAnswers.length
+          ) {
+            isCorrect = true;
+          }
+        }
         break;
       case 'shortAnswer':
+        if (
+          examQuestion.question.correctAnswers.length == 1 &&
+          examineeAnswer.examineeAnswers.length == 1
+        ) {
+          isCorrect =
+            examQuestion.question.correctAnswers[0].toLowerCase().trim() ==
+            examineeAnswer.examineeAnswers[0].toLowerCase().trim();
+        }
         break;
       case 'paragraph':
         break;
