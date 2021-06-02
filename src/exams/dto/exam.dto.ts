@@ -17,6 +17,21 @@ export class CreateExamResponseDTO {
   data?: ExamDocument;
 }
 
+export class UpdateExamDTO {
+  organizationId: string;
+  title: string;
+  description: string;
+  timeAllowed: number;
+  questions: [ExamQuestionDocument];
+}
+
+export class UpdateExamResponseDTO {
+  success: boolean;
+  error?: string;
+  message?: string;
+  data?: ExamDocument;
+}
+
 export class InviteExamineesDTO {
   examinees: [{ name: string; email: string }];
 }

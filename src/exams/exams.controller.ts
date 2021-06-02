@@ -7,6 +7,7 @@ import {
   Query,
   Post,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
@@ -15,6 +16,7 @@ import {
   InviteExamineesDTO,
   StartExamDTO,
   SubmitAnswersDTO,
+  UpdateExamDTO,
 } from './dto/exam.dto';
 import { ExamsService } from './exams.service';
 import { CanCreateExam } from './guards/can-create-exam.guard';
@@ -32,6 +34,18 @@ export class ExamsController {
     return {
       success: true,
       message: 'exam has been created',
+      data,
+    };
+  }
+  @Patch(':examId')
+  async updateExam(
+    @Param('examId') examId: string,
+    @Body() updateExamDTO: UpdateExamDTO,
+  ): Promise<CreateExamResponseDTO> {
+    const data = await this.examsService.updateExam(examId, updateExamDTO);
+    return {
+      success: true,
+      message: 'exam has been updated',
       data,
     };
   }

@@ -11,7 +11,11 @@ import { Model } from 'mongoose';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
-import { CreateExamDTO, InviteExamineesDTO } from './dto/exam.dto';
+import {
+  CreateExamDTO,
+  InviteExamineesDTO,
+  UpdateExamDTO,
+} from './dto/exam.dto';
 import { Exam, ExamDocument } from './schemas/exam.schema';
 import { Question, QuestionDocument } from './schemas/question.schema';
 import { Request } from 'express';
@@ -105,6 +109,38 @@ export class ExamsService {
         {
           success: false,
           error: `could not create exam : ${e.toString()}`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async updateExam(examId: string, examData: UpdateExamDTO) {
+    const { organizationId, title, description, timeAllowed } = examData;
+
+    const exam = await this.findExam({ _id: examId });
+    if (!exam) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Exam not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    try {
+      await exam.updateOne({
+        title: title || exam.title,
+        description: description || exam.description,
+        timeAllowed: timeAllowed || exam.timeAllowed,
+      });
+      return await this.findExam({ _id: exam._id });
+    } catch (e) {
+      throw new HttpException(
+        {
+          success: false,
+          error: `could not update exam : ${e.toString()}`,
         },
         HttpStatus.BAD_REQUEST,
       );
