@@ -317,7 +317,9 @@ export class ExamsService {
   }
 
   async startExam({ examId, examineeEmail, accessKey }) {
+    const exam = await this.findExam({ _id: examId });
     const examInvitation = await this.examInvitationModel.findOne({
+      exam: exam._id,
       examineeEmail,
       accessKey,
     });
