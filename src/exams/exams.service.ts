@@ -148,12 +148,12 @@ export class ExamsService {
     }
   }
 
-  async findExam(exam, hideAnswers = true) {
+  async findExam(exam, hideAnswers = true, populate = []) {
     try {
       const result = await this.examModel
         .findOne(exam)
         .select([hideAnswers && '-questions.question.correctAnswers'])
-        .populate([]);
+        .populate(populate);
       if (!result) {
         throw new HttpException(
           {

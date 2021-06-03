@@ -21,6 +21,7 @@ import {
 } from './dto/exam.dto';
 import { ExamsService } from './exams.service';
 import { CanCreateExam } from './guards/can-create-exam.guard';
+import { CanUpdateExam } from './guards/can-update-exam.guard';
 
 @Controller('exams')
 export class ExamsController {
@@ -39,6 +40,7 @@ export class ExamsController {
     };
   }
   @Patch(':examId')
+  @UseGuards(JwtAuthGuard, CanUpdateExam)
   async updateExam(
     @Param('examId') examId: string,
     @Body() updateExamDTO: UpdateExamDTO,
@@ -117,20 +119,20 @@ export class ExamsController {
     };
   }
 
-
   @Post(':examId/cancel-invitations')
   async cancelExamInvitations(
     @Param('examId') examId: string,
     @Body() cancelExamInvitationsDTO: CancelExamInvitationsDTO,
   ) {
-    await this.examsService.cancelExamInvitations(examId, cancelExamInvitationsDTO);
+    await this.examsService.cancelExamInvitations(
+      examId,
+      cancelExamInvitationsDTO,
+    );
     return {
       success: true,
       message: 'Invitations have been canceled',
     };
   }
-
-  
 
   @Get(':examId/invitations')
   async getInvitedExaminees(@Param('examId') examId: string) {
