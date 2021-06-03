@@ -21,6 +21,7 @@ import {
 } from './dto/exam.dto';
 import { ExamsService } from './exams.service';
 import { CanCreateExam } from './guards/can-create-exam.guard';
+import { CanDeleteExam } from './guards/can-delete-exam';
 import { CanUpdateExam } from './guards/can-update-exam.guard';
 
 @Controller('exams')
@@ -99,6 +100,7 @@ export class ExamsController {
   }
 
   @Delete(':examId')
+  @UseGuards(JwtAuthGuard, CanDeleteExam)
   async deleteExam(@Param('examId') examId: string) {
     await this.examsService.deleteExam(examId);
     return {
