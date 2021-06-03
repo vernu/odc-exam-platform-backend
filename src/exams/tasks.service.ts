@@ -13,7 +13,6 @@ export class TasksService {
     private examInvitationModel: Model<ExamInvitationDocument>,
     private mailService: MailService,
   ) {}
-  private readonly logger = new Logger(TasksService.name);
 
   // @Cron('* * * * * *')
   @Cron(CronExpression.EVERY_DAY_AT_6AM)
