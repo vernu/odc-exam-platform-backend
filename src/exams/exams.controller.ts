@@ -22,6 +22,7 @@ import {
 import { ExamsService } from './exams.service';
 import { CanCreateExam } from './guards/can-create-exam.guard';
 import { CanDeleteExam } from './guards/can-delete-exam';
+import { CanInviteExaminees } from './guards/can-invite-examinees';
 import { CanUpdateExam } from './guards/can-update-exam.guard';
 
 @Controller('exams')
@@ -110,6 +111,7 @@ export class ExamsController {
   }
 
   @Post(':examId/invite-examinees')
+  @UseGuards(JwtAuthGuard, CanInviteExaminees)
   async inviteExaminees(
     @Param('examId') examId: string,
     @Body() inviteExamineesDTO: InviteExamineesDTO,
@@ -122,6 +124,7 @@ export class ExamsController {
   }
 
   @Post(':examId/cancel-invitations')
+  @UseGuards(JwtAuthGuard, CanInviteExaminees)
   async cancelExamInvitations(
     @Param('examId') examId: string,
     @Body() cancelExamInvitationsDTO: CancelExamInvitationsDTO,
