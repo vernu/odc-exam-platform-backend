@@ -251,8 +251,11 @@ export class ExamsService {
     }
   }
 
-  async inviteExaminees(examId: string, examineesInfo: InviteExamineesDTO) {
+  async inviteExaminees(examId: string, invitationsInfo: InviteExamineesDTO) {
     const exam = await this.examModel.findById(examId);
+
+    //set invitation expiration to request.body.expiresAt or 30 days from now if expiresAt not provided
+    const expiresAt = invitationsInfo.expiresAt || Date.now() + 30;
     if (!exam) {
       throw new HttpException(
         {
@@ -263,7 +266,7 @@ export class ExamsService {
       );
     }
 
-    examineesInfo.examinees.forEach(async (examinee) => {
+    invitationsInfo.examinees.forEach(async (examinee) => {
       const { name, email } = examinee;
 
       const invited = await this.examInvitationModel.findOne({
@@ -284,6 +287,7 @@ export class ExamsService {
           examineeName: name,
           examineeEmail: email,
           accessKey,
+          expiresAt,
         });
         await examInvitation.save();
         this.mailService.sendEmail({
