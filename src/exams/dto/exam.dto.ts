@@ -33,6 +33,7 @@ export class UpdateExamResponseDTO {
 }
 
 export class InviteExamineesDTO {
+  expiresAt: Date;
   examinees: [{ name: string; email: string }];
 }
 

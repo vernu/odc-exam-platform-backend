@@ -9,6 +9,7 @@ import { TopicsModule } from './topics/topics.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { MailModule } from './mail/mail.module';
 import { ExamsModule } from './exams/exams.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -19,12 +20,15 @@ import { ExamsModule } from './exams/exams.module';
         return connection;
       },
     }),
+
     AuthModule,
     UsersModule,
     TopicsModule,
     OrganizationsModule,
     MailModule,
     ExamsModule,
+
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

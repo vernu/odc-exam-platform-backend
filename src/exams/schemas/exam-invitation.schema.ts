@@ -17,6 +17,8 @@ export class ExamInvitation {
   @Prop({ type: String, required: true })
   accessKey: string;
   @Prop({ type: Date })
+  expiresAt: Date;
+  @Prop({ type: Date })
   startedAt: Date;
   @Prop({ type: Date })
   finishedAt: Date;

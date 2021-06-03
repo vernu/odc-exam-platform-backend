@@ -20,6 +20,8 @@ import {
   ExamineeAnswer,
   ExamineeAnswerSchema,
 } from './schemas/examinee-answer.schema';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksService } from './tasks.service';
 
 @Module({
   imports: [
@@ -65,6 +67,6 @@ import {
     MailModule,
   ],
   controllers: [ExamsController],
-  providers: [ExamsService],
+  providers: [ExamsService, TasksService],
 })
 export class ExamsModule {}
