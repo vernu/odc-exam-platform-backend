@@ -15,6 +15,8 @@ export class Exam {
   description: string;
   @Prop({ type: Number })
   timeAllowed: number; //in minute
+  @Prop({ type: Number, default: 0 })
+  totalPoints: number;
   @Prop({ type: Types.ObjectId, ref: Organization.name })
   organization: Organization;
   @Prop({ type: [ExamQuestionSchema], ref: ExamQuestion.name })

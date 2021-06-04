@@ -54,6 +54,7 @@ export class ExamsService {
   async createExam(examData: CreateExamDTO) {
     const { organizationId, title, description, timeAllowed } = examData;
     var examQuestions: ExamQuestion[] = [];
+    var totalPoints = 0;
 
     const organization = await this.organizationsService.findAnOrganization({
       _id: organizationId,
@@ -70,7 +71,6 @@ export class ExamsService {
 
     examData.questions.map((content) => {
       const { type, question } = content.question;
-
       const topics = content.question.topics || [];
       const answerOptions = content.question.answerOptions || [];
       const correctAnswers = content.question.correctAnswers || [];
@@ -90,6 +90,8 @@ export class ExamsService {
         points: content.points,
       });
 
+      totalPoints += content.points;
+
       newExamQuestion.save();
       examQuestions = [...examQuestions, newExamQuestion];
     });
@@ -99,6 +101,7 @@ export class ExamsService {
       title,
       description,
       timeAllowed,
+      totalPoints,
       questions: examQuestions,
       createdBy: this.request.user,
     });

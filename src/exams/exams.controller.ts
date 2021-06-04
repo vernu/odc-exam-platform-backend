@@ -30,7 +30,7 @@ export class ExamsController {
   constructor(private readonly examsService: ExamsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, CanCreateExam)
+  // @UseGuards(JwtAuthGuard, CanCreateExam)
   async createExam(
     @Body() createExamDTO: CreateExamDTO,
   ): Promise<CreateExamResponseDTO> {
