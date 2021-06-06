@@ -8,7 +8,7 @@ export type ExamInvitationDocument = ExamInvitation & Document;
 @Schema({ timestamps: true })
 export class ExamInvitation {
   _id?: string;
-  @Prop({ type: Types.ObjectId, ref: Exam.name })
+  @Prop({ type: Types.ObjectId, ref: 'Exam' })
   exam: Exam;
   @Prop({ type: String, required: true })
   examineeName: string;

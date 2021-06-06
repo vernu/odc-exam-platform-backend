@@ -12,9 +12,9 @@ export class Organization {
   slug: string;
   @Prop({ type: String, required: true, lowercase: true })
   description: string;
-  @Prop({ type: Types.ObjectId, ref: User.name })
+  @Prop({ type: Types.ObjectId, ref: 'User' })
   admin: User;
-  @Prop({ type: [Types.ObjectId], ref: User.name })
+  @Prop({ type: [Types.ObjectId], ref: 'User' })
   examiners: [User];
 }
 
