@@ -515,7 +515,15 @@ export class ExamsService {
         examInvitation: examInvitation._id,
       })
       .select(['-examInvitation'])
-      .populate(['examQuestion', 'examQuestion.question']);
+      .populate([
+        'examQuestion',
+        {
+          path: 'examQuestion',
+          populate: {
+            path: 'question',
+          },
+        },
+      ]);
     return { examInvitation, examineeAnswers };
   }
 
