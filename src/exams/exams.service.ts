@@ -527,6 +527,25 @@ export class ExamsService {
     return { examInvitation, examineeAnswers };
   }
 
+  async getExamStats(examId: string) {
+    const exam = await this.examModel.findById(examId);
+    if (!exam) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'exam not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const invitations = await this.examInvitationModel.find({
+      exam: exam._id,
+    });
+    return {
+      invitedExaminees: invitations.length,
+    };
+  }
+
   getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
     max = Math.floor(max);

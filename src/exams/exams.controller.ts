@@ -194,4 +194,12 @@ export class ExamsController {
     };
   }
 
+  @Get(':examId/stats')
+  async getExamStats(@Param('examId') examId: string) {
+    const data = await this.examsService.getExamStats(examId);
+    return {
+      success: true,
+      data,
+    };
+  }
 }
