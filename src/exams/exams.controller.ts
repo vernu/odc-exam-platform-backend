@@ -184,4 +184,14 @@ export class ExamsController {
       message: 'answers submitted',
     };
   }
+
+  @Get(':examId/exam-invitations/:invitationId')
+  async getAnExamInvitation(@Param('invitationId') invitationId: string) {
+    const data = await this.examsService.getAnExamInvitation(invitationId);
+    return {
+      success: true,
+      data,
+    };
+  }
+
 }
