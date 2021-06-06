@@ -541,8 +541,14 @@ export class ExamsService {
     const invitations = await this.examInvitationModel.find({
       exam: exam._id,
     });
+    const examineesWhoCompleted = await this.examInvitationModel.find({
+      exam: exam._id,
+      finishedAt: { $ne: null },
+    });
     return {
+      exam,
       invitedExaminees: invitations.length,
+      examineesWhoTookTheExam: examineesWhoCompleted.length,
     };
   }
 
