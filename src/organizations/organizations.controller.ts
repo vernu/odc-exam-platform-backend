@@ -43,9 +43,9 @@ export class OrganizationsController {
   async findOrganizationById(
     @Param('organizationId') organizationId: string,
   ): Promise<FindAnOrganizationResponseDTO> {
-    const organization = await this.organizationsService.findOrganizationById(
-      organizationId,
-    );
+    const organization = await this.organizationsService.findAnOrganization({
+      _id: organizationId,
+    });
     if (organization) {
       return {
         success: true,

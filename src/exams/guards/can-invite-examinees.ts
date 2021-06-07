@@ -5,25 +5,29 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { OrganizationsService } from '../organizations.service';
+import { ExamsService } from '../exams.service';
 
 @Injectable()
-export class CanAddExaminerToAnOrganization implements CanActivate {
-  constructor(private organizationsService: OrganizationsService) {}
+export class CanInviteExaminees implements CanActivate {
+  constructor(private examsService: ExamsService) {}
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    if (user) {
+    if (user != null) {
       if (user.role == 'super-admin') {
         return true;
       } else {
-        //check if the user is the organization's admin
-        const organization = await this.organizationsService.findAnOrganization(
-          { _id: request.params.organizationId },
+        const exam = await this.examsService.findExam(
+          { _id: request.params.examId },
+          true,
+          ['createdBy'],
         );
-
-        if (organization.admin._id == request.user._id.toString()) {
+        if (
+          exam &&
+          exam.createdBy &&
+          exam.createdBy._id == user._id.toString()
+        ) {
           return true;
         }
       }
