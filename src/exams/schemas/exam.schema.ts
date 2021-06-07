@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Organization } from '../../organizations/schemas/organization.schema';
 import { User } from '../../users/schemas/user.schema';
-import { ExamQuestion } from './exam-question.schema';
+import { ExamQuestion, ExamQuestionSchema } from './exam-question.schema';
 
 export type ExamDocument = Exam & Document;
 
@@ -19,7 +19,7 @@ export class Exam {
   totalPoints: number;
   @Prop({ type: Types.ObjectId, ref: 'Organization' })
   organization: Organization;
-  @Prop({ type: [Types.ObjectId], ref: 'ExamQuestion' })
+  @Prop({ type: [ExamQuestionSchema], ref: ExamQuestion.name })
   questions: [ExamQuestion];
   @Prop({ type: Types.ObjectId, ref: 'User' })
   createdBy: User;
