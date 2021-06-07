@@ -106,6 +106,17 @@ export class AuthService {
           const organizations = await this.organizationsService.findOrganizations(
             { $or: [{ examiners: user._id }, { admin: user._id }] },
           );
+
+          if (organizations.length == 0) {
+            throw new HttpException(
+              {
+                success: false,
+                error:
+                  'your account is not associated with any organization yet',
+              },
+              HttpStatus.UNAUTHORIZED,
+            );
+          }
           return { ...res, organizations };
         }
         return res;
