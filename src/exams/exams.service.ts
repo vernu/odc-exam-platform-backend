@@ -419,7 +419,10 @@ export class ExamsService {
     // }
 
     // console.log(examInvitation);
-    await examInvitation.updateOne({ finishedAt: new Date() });
+    await examInvitation.updateOne({
+      totalPointsGained: 0,
+      finishedAt: new Date(),
+    });
 
     answers.map(async (answer) => {
       const examQuestion = await this.examQuestionModel
