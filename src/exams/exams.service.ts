@@ -394,7 +394,10 @@ export class ExamsService {
   }
 
   async submitAnswers({ examId, examineeEmail, accessKey, answers }) {
+    const exam = await this.examModel.findById(examId);
+
     const examInvitation = await this.examInvitationModel.findOne({
+      exam: exam._id,
       examineeEmail,
       accessKey,
     });
