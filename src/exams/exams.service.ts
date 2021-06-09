@@ -440,7 +440,11 @@ export class ExamsService {
           examineeAnswers: answer.answers,
         });
         await examineeAnswer.save();
-        this.gradeExamineeAnswer(examInvitation, examineeAnswer, examQuestion);
+        this.gradeExamineeAnswer(
+          examInvitation._id,
+          examineeAnswer,
+          examQuestion,
+        );
       }
     });
 
@@ -448,7 +452,7 @@ export class ExamsService {
   }
 
   async gradeExamineeAnswer(
-    examInvitation: ExamInvitationDocument,
+    examInvitationId: string,
     examineeAnswer: ExamineeAnswerDocument,
     examQuestion: ExamQuestionDocument,
   ) {
@@ -500,6 +504,9 @@ export class ExamsService {
 
     if (isCorrect) {
       await examineeAnswer.updateOne({ pointsGained: examQuestion.points });
+      const examInvitation = await this.examInvitationModel.findOne({
+        _id: examInvitationId,
+      });
       await examInvitation.updateOne({
         totalPointsGained:
           examInvitation.totalPointsGained + examQuestion.points,
