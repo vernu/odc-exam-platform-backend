@@ -589,6 +589,7 @@ export class ExamsService {
     const lowestScore = await this.examInvitationModel
       .findOne({
         exam: exam._id,
+        finishedAt: { $ne: null },
       })
       .sort('totalPointsGained')
       .select('-exam -accessKey -createdAt -updatedAt -__v');
@@ -596,6 +597,7 @@ export class ExamsService {
     const highestScore = await this.examInvitationModel
       .findOne({
         exam: exam._id,
+        finishedAt: { $ne: null },
       })
       .sort('-totalPointsGained')
       .select('-exam -accessKey -createdAt -updatedAt -__v');
