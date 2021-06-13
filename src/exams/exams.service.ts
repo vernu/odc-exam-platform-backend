@@ -545,6 +545,25 @@ export class ExamsService {
     return { examInvitation, examineeAnswers };
   }
 
+  //calculates the total points gained and updates the exam invitation model
+  async calculateTotalPointsGained(examInvitationId: string) {
+    const examInvitation = await this.examInvitationModel.findOne({
+      _id: examInvitationId,
+    });
+    if (examInvitation) {
+      const examineeAnswers = await this.examineeAnswerModel.find({
+        examInvitation: examInvitation._id,
+      });
+      if (examineeAnswers.length > 0) {
+        var totalPointsGained = 0;
+        examineeAnswers.map((examineeAnswer) => {
+          totalPointsGained += examineeAnswer.pointsGained;
+        });
+        await examInvitation.updateOne({ totalPointsGained });
+      }
+    }
+  }
+
   async getExamStats(examId: string) {
     const exam = await this.examModel.findById(examId);
     if (!exam) {
