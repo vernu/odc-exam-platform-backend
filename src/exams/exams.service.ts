@@ -590,13 +590,15 @@ export class ExamsService {
       .findOne({
         exam: exam._id,
       })
-      .sort('totalPointsGained');
+      .sort('totalPointsGained')
+      .select('-exam -accessKey -createdAt -updatedAt -__v');
 
     const highestScore = await this.examInvitationModel
       .findOne({
         exam: exam._id,
       })
-      .sort('-totalPointsGained');
+      .sort('-totalPointsGained')
+      .select('-exam -accessKey -createdAt -updatedAt -__v');
 
     return {
       exam,
