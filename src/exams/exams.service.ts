@@ -586,18 +586,38 @@ export class ExamsService {
       finishedAt: { $ne: null },
     });
 
-    const lowestScore = await this.examInvitationModel
+    /* TODO :   use aggregation to make the queries clean*/
+
+    const lowestScorer = await this.examInvitationModel
       .findOne({
         exam: exam._id,
         finishedAt: { $ne: null },
       })
-      .sort('totalPointsGained')
-      .select('-exam -accessKey -createdAt -updatedAt -__v');
+      .sort('totalPointsGained');
+    const lowestScore = lowestScorer ? lowestScorer.totalPointsGained : 0;
 
-    const highestScore = await this.examInvitationModel
+    const highestScorer = await this.examInvitationModel
       .findOne({
         exam: exam._id,
         finishedAt: { $ne: null },
+      })
+      .sort('-totalPointsGained');
+    const highestScore = highestScorer ? highestScorer.totalPointsGained : 0;
+
+    const lowestScores = await this.examInvitationModel
+      .find({
+        exam: exam._id,
+        finishedAt: { $ne: null },
+        totalPointsGained: lowestScore,
+      })
+      .sort('totalPointsGained')
+      .select('-exam -accessKey -createdAt -updatedAt -__v');
+
+    const highestScores = await this.examInvitationModel
+      .find({
+        exam: exam._id,
+        finishedAt: { $ne: null },
+        totalPointsGained: highestScore,
       })
       .sort('-totalPointsGained')
       .select('-exam -accessKey -createdAt -updatedAt -__v');
@@ -606,8 +626,8 @@ export class ExamsService {
       exam,
       invitedExaminees: invitations.length,
       examineesWhoTookTheExam: examineesWhoCompleted.length,
-      lowestScore,
-      highestScore,
+      lowestScores,
+      highestScores,
     };
   }
 
