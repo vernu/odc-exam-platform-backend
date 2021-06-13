@@ -585,10 +585,25 @@ export class ExamsService {
       exam: exam._id,
       finishedAt: { $ne: null },
     });
+
+    const lowestScore = await this.examInvitationModel
+      .findOne({
+        exam: exam._id,
+      })
+      .sort('totalPointsGained');
+
+    const highestScore = await this.examInvitationModel
+      .findOne({
+        exam: exam._id,
+      })
+      .sort('-totalPointsGained');
+
     return {
       exam,
       invitedExaminees: invitations.length,
       examineesWhoTookTheExam: examineesWhoCompleted.length,
+      lowestScore,
+      highestScore,
     };
   }
 
