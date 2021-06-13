@@ -426,6 +426,9 @@ export class ExamsService {
       totalPointsGained: 0,
       finishedAt: new Date(),
     });
+    await this.examineeAnswerModel
+      .find({ examInvitation: examInvitation._id })
+      .deleteMany();
 
     answers.map(async (answer) => {
       const examQuestion = await this.examQuestionModel
