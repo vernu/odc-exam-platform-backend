@@ -535,7 +535,7 @@ export class ExamsService {
       .find({
         examInvitation: examInvitation._id,
       })
-      .select(['-examInvitation'])
+      .select('-examInvitation -createdAt -updatedAt -__v')
       .populate([
         'examQuestion',
         {
