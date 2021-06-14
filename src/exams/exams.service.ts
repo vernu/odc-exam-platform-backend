@@ -518,9 +518,11 @@ export class ExamsService {
   }
 
   async getAnExamInvitation(invitationId: string) {
-    const examInvitation = await this.examInvitationModel.findOne({
-      _id: invitationId.toString(),
-    });
+    const examInvitation = await this.examInvitationModel
+      .findOne({
+        _id: invitationId.toString(),
+      })
+      .populate('exam');
     if (!examInvitation) {
       throw new HttpException(
         {
