@@ -90,15 +90,6 @@ export class ExamsController {
     };
   }
 
-  @Get(':examId/questions')
-  async getExamQuestions(@Param('examId') examId: string) {
-    const data = await this.examsService.getExamQuestions(examId);
-    return {
-      success: true,
-      count: data.length,
-      data,
-    };
-  }
 
   @Delete(':examId')
   @UseGuards(JwtAuthGuard, CanDeleteExam)

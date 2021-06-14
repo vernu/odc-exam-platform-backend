@@ -216,22 +216,7 @@ export class ExamsService {
     }
   }
 
-  async getExamQuestions(examId: string) {
-    const exam = await this.examModel.findById(examId);
-    if (!exam) {
-      throw new HttpException(
-        {
-          success: false,
-          error: 'Exam not found',
-        },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    const questions = await this.questionModel.find({
-      exam: exam._id,
-    });
-    return questions;
-  }
+
 
   async deleteExam(examId: string) {
     const exam = await this.examModel.findById(examId);
