@@ -24,6 +24,7 @@ import { CanCreateExam } from './guards/can-create-exam.guard';
 import { CanDeleteExam } from './guards/can-delete-exam';
 import { CanInviteExaminees } from './guards/can-invite-examinees';
 import { CanUpdateExam } from './guards/can-update-exam.guard';
+import { CanViewExamStats } from './guards/can-view-exam-stats';
 
 @Controller('exams')
 export class ExamsController {
@@ -89,7 +90,6 @@ export class ExamsController {
       data,
     };
   }
-
 
   @Delete(':examId')
   @UseGuards(JwtAuthGuard, CanDeleteExam)
@@ -186,6 +186,7 @@ export class ExamsController {
   }
 
   @Get(':examId/stats')
+  @UseGuards(JwtAuthGuard, CanViewExamStats)
   async getExamStats(@Param('examId') examId: string) {
     const data = await this.examsService.getExamStats(examId);
     return {
