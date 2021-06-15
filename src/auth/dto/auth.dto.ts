@@ -48,3 +48,14 @@ export class ResetPasswordResponseDTO {
   message?: string;
   error?: string;
 }
+
+export class ChangePasswordDTO {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export class ChangePasswordResponseDTO {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
