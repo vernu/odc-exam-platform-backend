@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -19,6 +20,8 @@ import {
   DeleteOrganizationResponseDTO,
   FindAnOrganizationResponseDTO,
   ShowOrganizationsResponseDTO,
+  UpdateOrganizationDTO,
+  UpdateOrganizationResponseDTO,
 } from './dto/organization.dto';
 import { OrganizationsService } from './organizations.service';
 import { CanViewAllOrganizations } from './guards/can-view-all-organizations.guard';
@@ -73,6 +76,21 @@ export class OrganizationsController {
     return {
       success: true,
       data: organization,
+    };
+  }
+  @Patch(':organizationId')
+  @UseGuards(JwtAuthGuard)
+  async updateOrganization(
+    @Param('organizationId') organizationId: string,
+    @Body() updateOrganizationDTO: UpdateOrganizationDTO,
+  ) {
+    await this.organizationsService.updateOrganization(
+      organizationId,
+      updateOrganizationDTO,
+    );
+    return {
+      success: true,
+      message: 'organization updated',
     };
   }
 

@@ -15,6 +15,17 @@ export class CreateOrganizationResponseDTO {
   error?: string;
   message?: string;
 }
+
+export class UpdateOrganizationDTO {
+  organizationName: string;
+  organizationDescription: string;
+}
+export class UpdateOrganizationResponseDTO {
+  success: boolean;
+  data?: Organization;
+  error?: string;
+  message?: string;
+}
 export class ShowOrganizationsResponseDTO {
   success: boolean;
   count?: number;
