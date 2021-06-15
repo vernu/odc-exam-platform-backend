@@ -133,6 +133,22 @@ export class ExamsService {
       );
     }
 
+    //check if any examinees have started working on this exam,
+    const examInvitations = await this.examInvitationModel.find({
+      exam: exam._id,
+      startedAt: { $ne: null },
+    });
+    if (examInvitations.length > 0) {
+      throw new HttpException(
+        {
+          success: false,
+          error:
+            'cannot update this exam, examinees have already started working on this exam',
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     try {
       await exam.updateOne({
         title: title || exam.title,
@@ -215,8 +231,6 @@ export class ExamsService {
       );
     }
   }
-
-
 
   async deleteExam(examId: string) {
     const exam = await this.examModel.findById(examId);
