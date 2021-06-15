@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Scope,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../users/schemas/user.schema';
@@ -16,7 +22,9 @@ import {
   PasswordReset,
   PasswordResetDocument,
 } from './schemas/password-reset.schema';
-
+import { Request } from 'express';
+import { REQUEST } from '@nestjs/core';
+@Injectable({ scope: Scope.REQUEST })
 @Injectable()
 export class AuthService {
   constructor(
@@ -27,6 +35,7 @@ export class AuthService {
     private mailService: MailService,
     @InjectModel(PasswordReset.name)
     private passwordResetModel: Model<PasswordResetDocument>,
+    @Inject(REQUEST) private readonly request: Request,
   ) {}
 
   async initialSuperAdminSetup(
@@ -265,5 +274,24 @@ export class AuthService {
     await user.updateOne({ password: hashedPassword });
     await passwordReset.updateOne({ usedAt: new Date() });
     return 'your password has been reset successfully';
+  }
+
+  async changePassword({ currentPassword, newPassword }) {
+    const currentUser = this.request.user;
+    const user = await this.userModel.findOne(currentUser).select('password');
+    if (await bcrypt.compare(currentPassword, user.password)) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await user.updateOne({
+        password: hashedPassword,
+      });
+    } else {
+      throw new HttpException(
+        {
+          success: true,
+          error: 'wrong password',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
   }
 }
