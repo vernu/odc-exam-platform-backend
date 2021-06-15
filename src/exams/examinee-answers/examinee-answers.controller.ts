@@ -13,10 +13,10 @@ export class ExamineeAnswersController {
     @Param('examineeAnswerId') examineeAnswerId: string,
     @Body() updateExamineeAnswerDTO: UpdateExamineeAnswerDTO,
   ) {
-    await this.examineeAnswersService.updateExamineeAnswer(
+    const data = await this.examineeAnswersService.updateExamineeAnswer(
       examineeAnswerId,
       updateExamineeAnswerDTO,
     );
-    return { success: true, message: 'updated' };
+    return { success: true, message: 'updated', data };
   }
 }

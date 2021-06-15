@@ -28,12 +28,13 @@ export class ExamineeAnswersService {
     }
 
     try {
-      await examineeAnswer.updateOne({
+      const data = await examineeAnswer.updateOne({
         pointsGained: updateExamineeAnswerDTO.pointsGained,
       });
       await this.examsService.calculateTotalPointsGained(
         examineeAnswer.examInvitation._id,
       );
+      return data;
     } catch (e) {
       throw new HttpException(
         { success: false, error: `failed to update: ${e.toString()}` },
