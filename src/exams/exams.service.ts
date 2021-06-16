@@ -228,6 +228,40 @@ export class ExamsService {
     }
   }
 
+  async getExamIncludingQuestions(exam) {
+    try {
+      const result = await this.examModel
+        .findOne(exam)
+        .populate([
+          'questions',
+          {
+            path: 'questions',
+            populate: {
+              path: 'question',
+            },
+          },
+        ]);
+      if (!result) {
+        throw new HttpException(
+          {
+            success: false,
+            error: 'exam not found',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return result;
+    } catch (e) {
+      throw new HttpException(
+        {
+          success: false,
+          error: `could not find exam : ${e.toString()}`,
+        },
+        500,
+      );
+    }
+  }
+
   async findExamsForOrganization(organizationId) {
     const organization = await this.organizationsService.findAnOrganization({
       _id: organizationId,
