@@ -30,11 +30,12 @@ export class QuestionsService {
 
     try {
       await question.updateOne(updateQuestionDTO);
+      return this.questionModel.findOne({ _id: question._id });
     } catch (e) {
       throw new HttpException(
         {
           success: false,
-          error: `coudnt update exam question : ${e.toString()}`,
+          error: `coudnt update question : ${e.toString()}`,
         },
         HttpStatus.BAD_REQUEST,
       );

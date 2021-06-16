@@ -10,7 +10,10 @@ export class QuestionsController {
     @Param('questionId') questionId: string,
     @Body() updateQuestionDTO: UpdateQuestionDTO,
   ) {
-    await this.questionsService.updateQuestion(questionId, updateQuestionDTO);
-    return { success: true, message: 'question has been updated' };
+    const data = await this.questionsService.updateQuestion(
+      questionId,
+      updateQuestionDTO,
+    );
+    return { success: true, message: 'question has been updated', data };
   }
 }
