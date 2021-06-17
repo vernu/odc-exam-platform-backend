@@ -64,6 +64,16 @@ export class ExamsController {
       data,
     };
   }
+  @Get(':examId/include-questions')
+  async getExamIncludingQuestions(@Param('examId') examId: string) {
+    const data = await this.examsService.getExamIncludingQuestions({
+      _id: examId,
+    });
+    return {
+      success: true,
+      data,
+    };
+  }
 
   @Get('')
   async findExamsForOrganization(

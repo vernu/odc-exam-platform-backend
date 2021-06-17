@@ -26,6 +26,8 @@ import { ExamineeAnswersController } from './examinee-answers/examinee-answers.c
 import { ExamineeAnswersService } from './examinee-answers/examinee-answers.service';
 import { ExamQuestionsController } from './exam-questions/exam-questions.controller';
 import { ExamQuestionsService } from './exam-questions/exam-questions.service';
+import { QuestionsController } from './questions/questions.controller';
+import { QuestionsService } from './questions/questions.service';
 
 @Module({
   imports: [
@@ -70,7 +72,7 @@ import { ExamQuestionsService } from './exam-questions/exam-questions.service';
     TopicsModule,
     MailModule,
   ],
-  controllers: [ExamsController, ExamineeAnswersController, ExamQuestionsController],
-  providers: [ExamsService, TasksService, ExamineeAnswersService, ExamQuestionsService],
+  controllers: [ExamsController, ExamineeAnswersController, ExamQuestionsController, QuestionsController],
+  providers: [ExamsService, TasksService, ExamineeAnswersService, ExamQuestionsService, QuestionsService],
 })
 export class ExamsModule {}

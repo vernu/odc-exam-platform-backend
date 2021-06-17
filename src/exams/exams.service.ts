@@ -120,7 +120,9 @@ export class ExamsService {
   }
 
   async updateExam(examId: string, examData: UpdateExamDTO) {
-    const { organizationId, title, description, timeAllowed } = examData;
+    const { title, description, timeAllowed } = examData;
+    var totalPoints = 0;
+    var examQuestions: ExamQuestion[] = [];
 
     const exam = await this.findExam({ _id: examId });
     if (!exam) {
@@ -132,6 +134,8 @@ export class ExamsService {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    examQuestions = exam.questions;
 
     //check if any examinees have started working on this exam,
     const examInvitations = await this.examInvitationModel.find({
@@ -148,12 +152,42 @@ export class ExamsService {
         HttpStatus.FORBIDDEN,
       );
     }
+    if (examData.questions) {
+      examQuestions = [];
+      examData.questions.map((content) => {
+        const { type, question } = content.question;
+        const topics = content.question.topics || [];
+        const answerOptions = content.question.answerOptions || [];
+        const correctAnswers = content.question.correctAnswers || [];
+
+        const newQuestion = new this.questionModel({
+          type,
+          question,
+          topics,
+          correctAnswers,
+          answerOptions,
+        });
+
+        newQuestion.save();
+
+        const newExamQuestion = new this.examQuestionModel({
+          question: newQuestion,
+          points: content.points,
+        });
+
+        totalPoints += content.points;
+
+        newExamQuestion.save();
+        examQuestions = [...examQuestions, newExamQuestion];
+      });
+    }
 
     try {
       await exam.updateOne({
         title: title || exam.title,
         description: description || exam.description,
         timeAllowed: timeAllowed || exam.timeAllowed,
+        questions: examQuestions,
       });
       return await this.findExam({ _id: exam._id });
     } catch (e) {
@@ -173,6 +207,40 @@ export class ExamsService {
         .findOne(exam)
         .select([hideAnswers && '-questions.question.correctAnswers'])
         .populate(populate);
+      if (!result) {
+        throw new HttpException(
+          {
+            success: false,
+            error: 'exam not found',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return result;
+    } catch (e) {
+      throw new HttpException(
+        {
+          success: false,
+          error: `could not find exam : ${e.toString()}`,
+        },
+        500,
+      );
+    }
+  }
+
+  async getExamIncludingQuestions(exam) {
+    try {
+      const result = await this.examModel
+        .findOne(exam)
+        .populate([
+          'questions',
+          {
+            path: 'questions',
+            populate: {
+              path: 'question',
+            },
+          },
+        ]);
       if (!result) {
         throw new HttpException(
           {
