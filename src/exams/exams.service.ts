@@ -623,12 +623,86 @@ export class ExamsService {
       .sort('-totalPointsGained')
       .select('-exam -accessKey -createdAt -updatedAt -__v');
 
+    const fastestResponses = await this.examInvitationModel.aggregate([
+      {
+        $match: {
+          exam: exam._id,
+          finishedAt: {
+            $ne: null,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          examineeEmail: 1,
+          examineeName: 1,
+          startedAt: 1,
+          finishedAt: 1,
+          timeTaken: {
+            $divide: [
+              {
+                $subtract: ['$finishedAt', '$startedAt'],
+              },
+              60000,
+            ],
+          },
+        },
+      },
+      {
+        $limit: 3,
+      },
+      {
+        $sort: {
+          timeTaken: 1,
+        },
+      },
+    ]);
+
+    const slowestResponses = await this.examInvitationModel.aggregate([
+      {
+        $match: {
+          exam: exam._id,
+          finishedAt: {
+            $ne: null,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          examineeEmail: 1,
+          examineeName: 1,
+          startedAt: 1,
+          finishedAt: 1,
+          timeTaken: {
+            $divide: [
+              {
+                $subtract: ['$finishedAt', '$startedAt'],
+              },
+              60000,
+            ],
+          },
+        },
+      },
+      {
+        $limit: 3,
+      },
+      {
+        $sort: {
+          timeTaken: -1,
+        },
+      },
+    ]);
+
     return {
       exam,
       invitedExaminees: invitations.length,
       examineesWhoTookTheExam: examineesWhoCompleted.length,
       lowestScores,
       highestScores,
+      fastestResponses,
+      slowestResponses,
     };
   }
 
