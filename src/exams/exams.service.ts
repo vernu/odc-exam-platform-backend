@@ -230,17 +230,15 @@ export class ExamsService {
 
   async getExamIncludingQuestions(exam) {
     try {
-      const result = await this.examModel
-        .findOne(exam)
-        .populate([
-          'questions',
-          {
-            path: 'questions',
-            populate: {
-              path: 'question',
-            },
+      const result = await this.examModel.findOne(exam).populate([
+        'questions',
+        {
+          path: 'questions',
+          populate: {
+            path: 'question',
           },
-        ]);
+        },
+      ]);
       if (!result) {
         throw new HttpException(
           {
@@ -457,7 +455,20 @@ export class ExamsService {
     // }
 
     await examInvitation.updateOne({ startedAt: new Date() });
-    return await this.findExam({ _id: examInvitation.exam._id });
+
+    // return await this.findExam({ _id: examInvitation.exam._id });
+    return await this.examModel
+      .findOne({ _id: examInvitation.exam._id })
+      .populate([
+        'questions',
+        {
+          path: 'questions',
+          populate: {
+            path: 'question',
+            options: { select: '-correctAnswers' },
+          },
+        },
+      ]);
   }
 
   async submitAnswers({ examId, examineeEmail, accessKey, answers }) {
