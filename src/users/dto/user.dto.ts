@@ -11,3 +11,8 @@ export class RegisterExaminerResponseDTO {
   message?: string;
   error?: string;
 }
+
+export class UpdateUserDTO {
+  name: string;
+  email: string;
+}

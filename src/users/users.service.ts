@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
-import { RegisterExaminerResponseDTO } from './dto/user.dto';
+import { UpdateUserDTO } from './dto/user.dto';
 import { MailService } from '../mail/mail.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 
@@ -60,5 +60,20 @@ export class UsersService {
       });
       return await newUser.save();
     }
+  }
+
+  async updateUser(userId: string, updateUserDTO: UpdateUserDTO) {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new HttpException(
+        { success: false, error: 'not found' },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    user.name = updateUserDTO.name || user.name;
+    user.email = updateUserDTO.email || user.email;
+    await user.save();
+    return user;
   }
 }
