@@ -120,7 +120,9 @@ export class ExamsService {
   }
 
   async updateExam(examId: string, examData: UpdateExamDTO) {
-    const { organizationId, title, description, timeAllowed } = examData;
+    const { title, description, timeAllowed } = examData;
+    var totalPoints = 0;
+    var examQuestions: ExamQuestion[] = [];
 
     const exam = await this.findExam({ _id: examId });
     if (!exam) {
@@ -133,11 +135,59 @@ export class ExamsService {
       );
     }
 
+    examQuestions = exam.questions;
+
+    //check if any examinees have started working on this exam,
+    const examInvitations = await this.examInvitationModel.find({
+      exam: exam._id,
+      startedAt: { $ne: null },
+    });
+    if (examInvitations.length > 0) {
+      throw new HttpException(
+        {
+          success: false,
+          error:
+            'cannot update this exam, examinees have already started working on this exam',
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+    if (examData.questions) {
+      examQuestions = [];
+      examData.questions.map((content) => {
+        const { type, question } = content.question;
+        const topics = content.question.topics || [];
+        const answerOptions = content.question.answerOptions || [];
+        const correctAnswers = content.question.correctAnswers || [];
+
+        const newQuestion = new this.questionModel({
+          type,
+          question,
+          topics,
+          correctAnswers,
+          answerOptions,
+        });
+
+        newQuestion.save();
+
+        const newExamQuestion = new this.examQuestionModel({
+          question: newQuestion,
+          points: content.points,
+        });
+
+        totalPoints += content.points;
+
+        newExamQuestion.save();
+        examQuestions = [...examQuestions, newExamQuestion];
+      });
+    }
+
     try {
       await exam.updateOne({
         title: title || exam.title,
         description: description || exam.description,
         timeAllowed: timeAllowed || exam.timeAllowed,
+        questions: examQuestions,
       });
       return await this.findExam({ _id: exam._id });
     } catch (e) {
@@ -157,6 +207,38 @@ export class ExamsService {
         .findOne(exam)
         .select([hideAnswers && '-questions.question.correctAnswers'])
         .populate(populate);
+      if (!result) {
+        throw new HttpException(
+          {
+            success: false,
+            error: 'exam not found',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return result;
+    } catch (e) {
+      throw new HttpException(
+        {
+          success: false,
+          error: `could not find exam : ${e.toString()}`,
+        },
+        500,
+      );
+    }
+  }
+
+  async getExamIncludingQuestions(exam) {
+    try {
+      const result = await this.examModel.findOne(exam).populate([
+        'questions',
+        {
+          path: 'questions',
+          populate: {
+            path: 'question',
+          },
+        },
+      ]);
       if (!result) {
         throw new HttpException(
           {
@@ -214,23 +296,6 @@ export class ExamsService {
         500,
       );
     }
-  }
-
-  async getExamQuestions(examId: string) {
-    const exam = await this.examModel.findById(examId);
-    if (!exam) {
-      throw new HttpException(
-        {
-          success: false,
-          error: 'Exam not found',
-        },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    const questions = await this.questionModel.find({
-      exam: exam._id,
-    });
-    return questions;
   }
 
   async deleteExam(examId: string) {
@@ -390,11 +455,27 @@ export class ExamsService {
     // }
 
     await examInvitation.updateOne({ startedAt: new Date() });
-    return await this.findExam({ _id: examInvitation.exam._id });
+
+    // return await this.findExam({ _id: examInvitation.exam._id });
+    return await this.examModel
+      .findOne({ _id: examInvitation.exam._id })
+      .populate([
+        'questions',
+        {
+          path: 'questions',
+          populate: {
+            path: 'question',
+            options: { select: '-correctAnswers' },
+          },
+        },
+      ]);
   }
 
   async submitAnswers({ examId, examineeEmail, accessKey, answers }) {
+    const exam = await this.examModel.findById(examId);
+
     const examInvitation = await this.examInvitationModel.findOne({
+      exam: exam._id,
       examineeEmail,
       accessKey,
     });
@@ -419,7 +500,13 @@ export class ExamsService {
     // }
 
     // console.log(examInvitation);
-    await examInvitation.updateOne({ finishedAt: new Date() });
+    await examInvitation.updateOne({
+      totalPointsGained: 0,
+      finishedAt: new Date(),
+    });
+    await this.examineeAnswerModel
+      .find({ examInvitation: examInvitation._id })
+      .deleteMany();
 
     answers.map(async (answer) => {
       const examQuestion = await this.examQuestionModel
@@ -434,7 +521,11 @@ export class ExamsService {
           examineeAnswers: answer.answers,
         });
         await examineeAnswer.save();
-        this.gradeExamineeAnswer(examineeAnswer, examQuestion);
+        this.gradeExamineeAnswer(
+          examInvitation._id,
+          examineeAnswer,
+          examQuestion,
+        );
       }
     });
 
@@ -442,6 +533,7 @@ export class ExamsService {
   }
 
   async gradeExamineeAnswer(
+    examInvitationId: string,
     examineeAnswer: ExamineeAnswerDocument,
     examQuestion: ExamQuestionDocument,
   ) {
@@ -493,13 +585,22 @@ export class ExamsService {
 
     if (isCorrect) {
       await examineeAnswer.updateOne({ pointsGained: examQuestion.points });
+      const examInvitation = await this.examInvitationModel.findOne({
+        _id: examInvitationId,
+      });
+      await examInvitation.updateOne({
+        totalPointsGained:
+          examInvitation.totalPointsGained + examQuestion.points,
+      });
     }
   }
 
   async getAnExamInvitation(invitationId: string) {
-    const examInvitation = await this.examInvitationModel.findOne({
-      _id: invitationId.toString(),
-    });
+    const examInvitation = await this.examInvitationModel
+      .findOne({
+        _id: invitationId.toString(),
+      })
+      .populate('exam');
     if (!examInvitation) {
       throw new HttpException(
         {
@@ -514,7 +615,7 @@ export class ExamsService {
       .find({
         examInvitation: examInvitation._id,
       })
-      .select(['-examInvitation'])
+      .select('-examInvitation -createdAt -updatedAt -__v')
       .populate([
         'examQuestion',
         {
@@ -525,6 +626,25 @@ export class ExamsService {
         },
       ]);
     return { examInvitation, examineeAnswers };
+  }
+
+  //calculates the total points gained and updates the exam invitation model
+  async calculateTotalPointsGained(examInvitationId: string) {
+    const examInvitation = await this.examInvitationModel.findOne({
+      _id: examInvitationId,
+    });
+    if (examInvitation) {
+      const examineeAnswers = await this.examineeAnswerModel.find({
+        examInvitation: examInvitation._id,
+      });
+      if (examineeAnswers.length > 0) {
+        var totalPointsGained = 0;
+        examineeAnswers.map((examineeAnswer) => {
+          totalPointsGained += examineeAnswer.pointsGained;
+        });
+        await examInvitation.updateOne({ totalPointsGained });
+      }
+    }
   }
 
   async getExamStats(examId: string) {
@@ -545,10 +665,123 @@ export class ExamsService {
       exam: exam._id,
       finishedAt: { $ne: null },
     });
+
+    /* TODO :   use aggregation to make the queries clean*/
+
+    const lowestScorer = await this.examInvitationModel
+      .findOne({
+        exam: exam._id,
+        finishedAt: { $ne: null },
+      })
+      .sort('totalPointsGained');
+    const lowestScore = lowestScorer ? lowestScorer.totalPointsGained : 0;
+
+    const highestScorer = await this.examInvitationModel
+      .findOne({
+        exam: exam._id,
+        finishedAt: { $ne: null },
+      })
+      .sort('-totalPointsGained');
+    const highestScore = highestScorer ? highestScorer.totalPointsGained : 0;
+
+    const lowestScores = await this.examInvitationModel
+      .find({
+        exam: exam._id,
+        finishedAt: { $ne: null },
+        totalPointsGained: lowestScore,
+      })
+      .sort('totalPointsGained')
+      .select('-exam -accessKey -createdAt -updatedAt -__v');
+
+    const highestScores = await this.examInvitationModel
+      .find({
+        exam: exam._id,
+        finishedAt: { $ne: null },
+        totalPointsGained: highestScore,
+      })
+      .sort('-totalPointsGained')
+      .select('-exam -accessKey -createdAt -updatedAt -__v');
+
+    const fastestResponses = await this.examInvitationModel.aggregate([
+      {
+        $match: {
+          exam: exam._id,
+          finishedAt: {
+            $ne: null,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          examineeEmail: 1,
+          examineeName: 1,
+          startedAt: 1,
+          finishedAt: 1,
+          timeTaken: {
+            $divide: [
+              {
+                $subtract: ['$finishedAt', '$startedAt'],
+              },
+              60000,
+            ],
+          },
+        },
+      },
+      {
+        $limit: 3,
+      },
+      {
+        $sort: {
+          timeTaken: 1,
+        },
+      },
+    ]);
+
+    const slowestResponses = await this.examInvitationModel.aggregate([
+      {
+        $match: {
+          exam: exam._id,
+          finishedAt: {
+            $ne: null,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          examineeEmail: 1,
+          examineeName: 1,
+          startedAt: 1,
+          finishedAt: 1,
+          timeTaken: {
+            $divide: [
+              {
+                $subtract: ['$finishedAt', '$startedAt'],
+              },
+              60000,
+            ],
+          },
+        },
+      },
+      {
+        $limit: 3,
+      },
+      {
+        $sort: {
+          timeTaken: -1,
+        },
+      },
+    ]);
+
     return {
       exam,
       invitedExaminees: invitations.length,
       examineesWhoTookTheExam: examineesWhoCompleted.length,
+      lowestScores,
+      highestScores,
+      fastestResponses,
+      slowestResponses,
     };
   }
 

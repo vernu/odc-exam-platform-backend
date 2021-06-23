@@ -16,6 +16,8 @@ export class ExamInvitation {
   examineeEmail: string;
   @Prop({ type: String, required: true })
   accessKey: string;
+  @Prop({ type: Number, default: 0 })
+  totalPointsGained: number;
   @Prop({ type: Date })
   expiresAt: Date;
   @Prop({ type: Date })

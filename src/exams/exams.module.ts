@@ -22,6 +22,12 @@ import {
 } from './schemas/examinee-answer.schema';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksService } from './tasks.service';
+import { ExamineeAnswersController } from './examinee-answers/examinee-answers.controller';
+import { ExamineeAnswersService } from './examinee-answers/examinee-answers.service';
+import { ExamQuestionsController } from './exam-questions/exam-questions.controller';
+import { ExamQuestionsService } from './exam-questions/exam-questions.service';
+import { QuestionsController } from './questions/questions.controller';
+import { QuestionsService } from './questions/questions.service';
 
 @Module({
   imports: [
@@ -66,7 +72,7 @@ import { TasksService } from './tasks.service';
     TopicsModule,
     MailModule,
   ],
-  controllers: [ExamsController],
-  providers: [ExamsService, TasksService],
+  controllers: [ExamsController, ExamineeAnswersController, ExamQuestionsController, QuestionsController],
+  providers: [ExamsService, TasksService, ExamineeAnswersService, ExamQuestionsService, QuestionsService],
 })
 export class ExamsModule {}

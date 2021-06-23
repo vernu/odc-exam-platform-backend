@@ -1,6 +1,8 @@
-import { Body, Controller, Post, Query } from '@nestjs/common';
+import { Body, Controller, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
+  ChangePasswordDTO,
+  ChangePasswordResponseDTO,
   InitialSuperAdminSetupDTO,
   InitialSuperAdminSetupResponsDTO,
   LoginDTO,
@@ -12,6 +14,7 @@ import {
   ValidatePasswordResetSecretCodeDTO,
   ValidatePasswordResetSecretCodeResponseDTO,
 } from './dto/auth.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -70,6 +73,18 @@ export class AuthController {
     return {
       success: true,
       message: await this.authService.resetPassword(resetPasswordDTO),
+    };
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Body() changePasswordDTO: ChangePasswordDTO,
+  ): Promise<ChangePasswordResponseDTO> {
+    await this.authService.changePassword(changePasswordDTO);
+    return {
+      success: true,
+      message: 'your password has been changed',
     };
   }
 }

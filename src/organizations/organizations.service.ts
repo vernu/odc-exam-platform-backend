@@ -13,6 +13,7 @@ import {
   CreateOrganizationResponseDTO,
   DeleteOrganizationResponseDTO,
   ShowOrganizationsResponseDTO,
+  UpdateOrganizationDTO,
 } from './dto/organization.dto';
 import {
   Organization,
@@ -121,6 +122,34 @@ export class OrganizationsService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async updateOrganization(
+    organizationId: string,
+    updateOrganizationDTO: UpdateOrganizationDTO,
+  ) {
+    const { organizationName, organizationDescription } = updateOrganizationDTO;
+
+    const organization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+
+    if (!organization) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Organization not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    await organization.updateOne({
+      name: organizationName || organization.name,
+    });
+    await organization.updateOne({
+      description: organizationDescription || organization.description,
+    });
   }
 
   async deleteOrganization(organizationId: string): Promise<any> {
