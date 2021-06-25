@@ -19,7 +19,7 @@ export class Exam {
   totalPoints: number;
   @Prop({ type: Types.ObjectId, ref: 'Organization' })
   organization: Organization;
-  @Prop({ type: [ExamQuestionSchema], ref: ExamQuestion.name })
+  @Prop({ type: [Types.ObjectId], ref: ExamQuestion.name })
   questions: [ExamQuestion];
   @Prop({ type: Types.ObjectId, ref: 'User' })
   createdBy: User;
