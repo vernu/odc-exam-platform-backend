@@ -671,6 +671,16 @@ export class ExamsService {
       { $group: { _id: 'id', total: { $sum: '$totalPointsGained' } } },
     ]);
 
+    var allScores = examineesWhoCompleted.map((i) => i.totalPointsGained);
+    allScores = allScores.sort();
+
+    var scoresRange = [0, 0];
+    if (allScores.length == 1) {
+      scoresRange = [allScores[0], allScores[0]];
+    } else if (allScores.length > 1) {
+      scoresRange = [allScores[0], allScores[allScores.length - 1]];
+    }
+
     const averageScore =
       pointsOfAllExaminees[0].total / examineesWhoCompleted.length;
 
@@ -786,7 +796,9 @@ export class ExamsService {
       exam,
       invitedExaminees: invitations.length,
       examineesWhoTookTheExam: examineesWhoCompleted.length,
+      allScores,
       averageScore,
+      scoresRange,
       lowestScores,
       highestScores,
       fastestResponses,
