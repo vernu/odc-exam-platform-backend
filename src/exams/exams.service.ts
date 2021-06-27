@@ -666,6 +666,14 @@ export class ExamsService {
       finishedAt: { $ne: null },
     });
 
+    const pointsOfAllExaminees = await this.examInvitationModel.aggregate([
+      { $match: { exam: exam._id } },
+      { $group: { _id: 'id', total: { $sum: '$totalPointsGained' } } },
+    ]);
+
+    const averageScore =
+      pointsOfAllExaminees[0].total / examineesWhoCompleted.length;
+
     /* TODO :   use aggregation to make the queries clean*/
 
     const lowestScorer = await this.examInvitationModel
@@ -778,6 +786,7 @@ export class ExamsService {
       exam,
       invitedExaminees: invitations.length,
       examineesWhoTookTheExam: examineesWhoCompleted.length,
+      averageScore,
       lowestScores,
       highestScores,
       fastestResponses,
