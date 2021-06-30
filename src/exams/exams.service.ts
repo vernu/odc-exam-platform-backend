@@ -811,7 +811,7 @@ export class ExamsService {
       invitedExaminees: invitations.length,
       examineesWhoTookTheExam: examineesWhoCompleted.length,
       allScores,
-      uniqueScores,
+      uniqueScores: uniqueScoresList,
       averageScore,
       scoresRange,
       mean: this.calculateMean(allScores),
