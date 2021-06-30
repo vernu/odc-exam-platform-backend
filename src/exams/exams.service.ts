@@ -454,10 +454,11 @@ export class ExamsService {
     //   );
     // }
 
-    await examInvitation.updateOne({ startedAt: new Date() });
+    const startedAt = new Date();
+    await examInvitation.updateOne({ startedAt });
 
     // return await this.findExam({ _id: examInvitation.exam._id });
-    return await this.examModel
+    const data = await this.examModel
       .findOne({ _id: examInvitation.exam._id })
       .populate([
         'questions',
@@ -469,6 +470,8 @@ export class ExamsService {
           },
         },
       ]);
+
+    return { startedAt, data };
   }
 
   async submitAnswers({ examId, examineeEmail, accessKey, answers }) {
