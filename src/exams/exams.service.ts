@@ -677,6 +677,17 @@ export class ExamsService {
     var allScores = examineesWhoCompleted.map((i) => i.totalPointsGained);
     allScores = allScores.sort();
 
+    var uniqueScores = [...new Set(allScores)];
+    const uniqueScoresList = [];
+
+    uniqueScores.forEach((u) => {
+      var count = 0;
+      allScores.forEach((s) => {
+        if (s == u) count++;
+      });
+      uniqueScoresList.push({ score: u, count });
+    });
+
     var scoresRange = [0, 0];
     if (allScores.length == 1) {
       scoresRange = [allScores[0], allScores[0]];
@@ -800,6 +811,7 @@ export class ExamsService {
       invitedExaminees: invitations.length,
       examineesWhoTookTheExam: examineesWhoCompleted.length,
       allScores,
+      uniqueScores,
       averageScore,
       scoresRange,
       mean: this.calculateMean(allScores),
