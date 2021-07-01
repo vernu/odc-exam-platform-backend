@@ -152,6 +152,7 @@ export class ExamsController {
   }
 
   @Post(':examId/invitations/send-email')
+  @UseGuards(JwtAuthGuard, CanInviteExaminees)
   async sendEmailToInvitedExaminees(
     @Param('examId') examId: string,
     @Body() sendEmailToInvitedExamineesDTO: SendEmailToInvitedExamineesDTO,
