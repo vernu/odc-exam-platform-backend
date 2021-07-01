@@ -150,6 +150,10 @@ export class OrganizationsService {
     await organization.updateOne({
       description: organizationDescription || organization.description,
     });
+
+    return await this.organizationModel.findOne({
+      _id: organizationId,
+    });
   }
 
   async deleteOrganization(organizationId: string): Promise<any> {

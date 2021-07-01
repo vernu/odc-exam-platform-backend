@@ -84,13 +84,14 @@ export class OrganizationsController {
     @Param('organizationId') organizationId: string,
     @Body() updateOrganizationDTO: UpdateOrganizationDTO,
   ) {
-    await this.organizationsService.updateOrganization(
+    const data = await this.organizationsService.updateOrganization(
       organizationId,
       updateOrganizationDTO,
     );
     return {
       success: true,
       message: 'organization updated',
+      data,
     };
   }
 
