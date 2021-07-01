@@ -444,7 +444,6 @@ export class ExamsService {
         html: `Hi ${examineeName},<br>${body}`,
       });
     });
-    return examInvitations;
   }
 
   async startExam({ examId, examineeEmail, accessKey }) {

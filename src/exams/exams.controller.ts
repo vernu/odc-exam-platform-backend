@@ -162,7 +162,7 @@ export class ExamsController {
     );
     return {
       success: true,
-      data,
+      message: 'emails sent ',
     };
   }
 
