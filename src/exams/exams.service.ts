@@ -15,6 +15,7 @@ import {
   CancelExamInvitationsDTO,
   CreateExamDTO,
   InviteExamineesDTO,
+  SendEmailToInvitedExamineesDTO,
   UpdateExamDTO,
 } from './dto/exam.dto';
 import { Exam, ExamDocument } from './schemas/exam.schema';
@@ -417,6 +418,33 @@ export class ExamsService {
       exam: exam._id,
     });
     return invitees;
+  }
+
+  async sendEmailToInvitedExaminees(
+    examId: string,
+    sendEmailToInvitedExamineesDTO: SendEmailToInvitedExamineesDTO,
+  ) {
+    const { subject, body, emails } = sendEmailToInvitedExamineesDTO;
+    const exam = await this.examModel.findById(examId);
+    if (!exam) {
+      throw new HttpException(
+        { success: false, error: 'exam not found' },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const examInvitations = await this.examInvitationModel.find({
+      exam: exam._id,
+      examineeEmail: { $in: emails },
+    });
+    examInvitations.forEach((examInvitation) => {
+      let { examineeEmail, examineeName } = examInvitation;
+      this.mailService.sendEmail({
+        to: examineeEmail,
+        subject,
+        html: `Hi ${examineeName},<br>${body}`,
+      });
+    });
+    return examInvitations;
   }
 
   async startExam({ examId, examineeEmail, accessKey }) {

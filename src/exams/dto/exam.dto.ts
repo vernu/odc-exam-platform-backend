@@ -41,6 +41,12 @@ export class CancelExamInvitationsDTO {
   examinees: [email: string];
 }
 
+export class SendEmailToInvitedExamineesDTO {
+  subject: string;
+  body: string;
+  emails: [string];
+}
+
 export class StartExamDTO {
   examineeEmail: string;
   accessKey: string;

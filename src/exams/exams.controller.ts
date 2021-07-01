@@ -15,6 +15,7 @@ import {
   CreateExamDTO,
   CreateExamResponseDTO,
   InviteExamineesDTO,
+  SendEmailToInvitedExamineesDTO,
   StartExamDTO,
   SubmitAnswersDTO,
   UpdateExamDTO,
@@ -146,6 +147,21 @@ export class ExamsController {
     return {
       success: true,
       count: data.length,
+      data,
+    };
+  }
+
+  @Post(':examId/invitations/send-email')
+  async sendEmailToInvitedExaminees(
+    @Param('examId') examId: string,
+    @Body() sendEmailToInvitedExamineesDTO: SendEmailToInvitedExamineesDTO,
+  ) {
+    const data = await this.examsService.sendEmailToInvitedExaminees(
+      examId,
+      sendEmailToInvitedExamineesDTO,
+    );
+    return {
+      success: true,
       data,
     };
   }
