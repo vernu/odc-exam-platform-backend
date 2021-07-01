@@ -204,4 +204,13 @@ export class ExamsController {
       data,
     };
   }
+  @Get(':examId/questions-stats')
+  @UseGuards(JwtAuthGuard, CanViewExamStats)
+  async getExamQuestionsStats(@Param('examId') examId: string) {
+    const data = await this.examsService.getExamQuestionsStats(examId);
+    return {
+      success: true,
+      data,
+    };
+  }
 }

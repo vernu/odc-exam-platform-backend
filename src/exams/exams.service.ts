@@ -824,6 +824,64 @@ export class ExamsService {
     };
   }
 
+  async getExamQuestionsStats(examId: string) {
+    const exam = await this.examModel.findById(examId).populate([
+      'questions',
+      {
+        path: 'questions',
+        populate: {
+          path: 'question',
+          options: { select: '-correctAnswers' },
+        },
+      },
+    ]);
+    if (!exam) {
+      throw new HttpException(
+        {
+          success: false,
+          error: 'exam not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const invitations = await this.examInvitationModel.find({
+      exam: exam._id,
+    });
+    // return invitations;
+    const examineesWhoCompleted = await this.examInvitationModel.find({
+      exam: exam._id,
+      finishedAt: { $ne: null },
+    });
+
+    // const examQuestionsStats: {
+    //   examQuestions: ExamQuestionDocument;
+    //   answeredBy: number;
+    // };
+    // [] = [];
+    // var examQuestionsStats = [];
+    var questions = exam.questions;
+    const promise = questions.map(async (eq) => {
+      const examineeAnswers = await this.examineeAnswerModel.find().where({
+        examInvitation: { $in: invitations.map((i) => i._id) },
+        examQuestion: eq._id,
+        pointsGained: { $gt: 0 },
+      });
+
+      return {
+        examQuestion: eq,
+        answeredBy: examineeAnswers.length,
+      };
+    });
+
+    return Promise.all(promise);
+
+    const examineeAnswers = await this.examineeAnswerModel
+      .find()
+      .where({ examInvitation: { $in: invitations.map((i) => i._id) } });
+
+    return examineeAnswers;
+  }
+
   getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
     max = Math.floor(max);

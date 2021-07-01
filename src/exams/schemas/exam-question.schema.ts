@@ -5,6 +5,7 @@ import { Question } from './question.schema';
 export type ExamQuestionDocument = ExamQuestion & Document;
 @Schema({ timestamps: true })
 export class ExamQuestion {
+  _id?: string;
   @Prop({ type: Types.ObjectId, ref: 'Question' })
   question: Question;
   @Prop({ type: Number, required: true, default: 0 })
