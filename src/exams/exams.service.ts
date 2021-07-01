@@ -853,12 +853,6 @@ export class ExamsService {
       finishedAt: { $ne: null },
     });
 
-    // const examQuestionsStats: {
-    //   examQuestions: ExamQuestionDocument;
-    //   answeredBy: number;
-    // };
-    // [] = [];
-    // var examQuestionsStats = [];
     var questions = exam.questions;
     const promise = questions.map(async (eq) => {
       const examineeAnswers = await this.examineeAnswerModel.find().where({
