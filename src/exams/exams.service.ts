@@ -701,7 +701,7 @@ export class ExamsService {
       { $group: { _id: 'id', total: { $sum: '$totalPointsGained' } } },
     ]);
 
-    var allScores = examineesWhoCompleted.map((i) => i.totalPointsGained);
+    var allScores = invitations.map((i) => i.totalPointsGained);
     allScores = allScores.sort();
 
     var uniqueScores = [...new Set(allScores)];
