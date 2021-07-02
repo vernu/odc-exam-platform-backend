@@ -858,7 +858,7 @@ export class ExamsService {
         path: 'questions',
         populate: {
           path: 'question',
-          options: { select: '-correctAnswers' },
+          // options: { select: '-correctAnswers' },
         },
       },
     ]);
