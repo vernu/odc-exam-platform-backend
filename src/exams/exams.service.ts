@@ -362,7 +362,7 @@ export class ExamsService {
         this.mailService.sendEmail({
           to: email,
           subject: 'Invitation for Exam',
-          html: `Hi ${name},<br> You have been invited to ${exam.title}<br> Your access key is ${accessKey}`,
+          html: `Hi ${name},<br> You have been invited to ${exam.title}<br> Your access key is  ${accessKey} <br> ${process.env.FRONTEND_URL}/proceed-to-exam/${exam._id}`,
         });
       } catch (e) {
         throw new HttpException(
