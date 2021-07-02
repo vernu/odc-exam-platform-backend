@@ -895,12 +895,6 @@ export class ExamsService {
     });
 
     return Promise.all(promise);
-
-    const examineeAnswers = await this.examineeAnswerModel
-      .find()
-      .where({ examInvitation: { $in: invitations.map((i) => i._id) } });
-
-    return examineeAnswers;
   }
 
   getRandomInt(min: number, max: number): number {
