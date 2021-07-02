@@ -481,8 +481,9 @@ export class ExamsService {
     //   );
     // }
 
-    const startedAt = new Date();
-    await examInvitation.updateOne({ startedAt });
+    const startedAt = examInvitation.startedAt || new Date();
+    if (examInvitation.startedAt == null)
+      await examInvitation.updateOne({ startedAt });
 
     // return await this.findExam({ _id: examInvitation.exam._id });
     const data = await this.examModel
