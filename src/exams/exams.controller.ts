@@ -142,6 +142,7 @@ export class ExamsController {
   }
 
   @Get(':examId/invitations')
+  @UseGuards(JwtAuthGuard, CanInviteExaminees)
   async getInvitedExaminees(@Param('examId') examId: string) {
     const data = await this.examsService.getInvitedExaminees(examId);
     return {
