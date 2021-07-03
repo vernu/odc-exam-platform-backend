@@ -697,6 +697,13 @@ export class ExamsService {
       finishedAt: { $ne: null },
     });
 
+    if (examineesWhoCompleted.length == 0) {
+      throw new HttpException(
+        { success: false, error: 'No stats available' },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     const pointsOfAllExaminees = await this.examInvitationModel.aggregate([
       { $match: { exam: exam._id } },
       { $group: { _id: 'id', total: { $sum: '$totalPointsGained' } } },
